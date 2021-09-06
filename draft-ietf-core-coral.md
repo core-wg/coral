@@ -153,6 +153,8 @@ as two specialized CoRAL serialization formats.
 
 ## Data and Interaction Model
 
+<!--
+
 The data model derives from the Web Linking model of {{RFC8288}} and
 consists primarily of two elements: "links" that describe the
 relationship between two resources and the type of that relationship;
@@ -164,6 +166,81 @@ in a way similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-co
 In contrast to RDF, however, the focus of CoRAL is not on the
 description of a graph of resources, but on the discovery of possible
 future application states.
+
+-->
+### Definitions
+
+The *basic CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:
+Data is expressed as an (unordered) set of triples (also called statements),
+consisting of a subject, a predicate and an object.
+The predicate is always a URI, and subject and object are each either a URI, or a concrete CBOR object (a literal).
+All URIs here are limited to the syntax-based normalized form of {{RFC3986}} Section 6.2.2.
+
+These triples form a directed multigraph with the subject and object being source and destination, and the predicate a description <!-- not "label", because that implies uniqueness of the labels in Wikipedia definition --> on the edge.
+That graph is equivalent to the data.
+
+To form a set and a graph, we define an equivalence relation:
+URIs are only equal to URIs and if they are identical byte-wise.
+Literals carry an identity from their serialization format (think of it as the file and cursor position from which it was read -- but if cbor-packed is involved it's more like the stack of cursors at parsing time),
+and are only equivalent to themselves.
+Triples are equivalent to each other if their subject, predicate and object are pair-wise equivalent.
+
+The *CoRAL structured information model* is a sequence of "passings" the basic model's edges,
+where
+* each edge is passed at least one time in total,
+* each edge is passed at most one time after each passing that ends in its start point
+  (with the obvious exception that edges from the root node can be passed once from the start), and
+* between a passing of an edge from A to B and a later passing from B to C,
+  passings can only be along edges that can be reached from B along the graph,
+  until B is the end of a different passing.
+The passings starts at the root node, defined as the URI from which the document is obtained.
+<!-- Terminology still to be enhanced, asking around at https://cs.stackexchange.com/questions/144008/terminology-for-multiply-visiting-walks-of-dags -->
+
+For better understanding,
+think of the structured information model as a sort of tree spanning from the root node,
+with the oddity that when a node is reached along two different edges (which a normal tree doesn't do),
+it is up to the builder of the tree whether to describe anything children of the entered node
+on one parent or on the other parent,
+on both,
+or to describe some children at the first and others at a later occasion.
+<!-- also the sequences can even be different, which is something at least the serialization supports;
+maybe we may want to put a stop to the madness there and impose order,
+or someone comes up with a reason why we actually want that. -->
+
+### Observations
+
+The structured form of a data set is in general not unique:
+If a node has more than one child, their sequence can be varied.
+If a node has more than one parent, its children may be expressed on any non-empty set of its parents
+to obtain a structured data set that expresses the same data set.
+
+In general, arbitrary data can not be expressed in a structured data set, because
+* There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
+* There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
+
+In particular, the precise data from one structured information document can only be expressed at the same URI.
+However, statements can be added to make a data set that is expressible elsewhere,
+and subsets of the data can be taken and expressed.
+
+Null literals are not special compared to other literals -- they just happen to work like RDF blank nodes,
+and are also called blank nodes.
+
+Forms are not special in the information model, but are merely statements around a blank node.
+They can be special in serialization formats (which have more efficient notations for them),
+and are used by the interaction model for special operations.
+
+The structured information model contains more information than the basic information model.
+\[ TBD put this into a different context because it's not an observation any more: \]
+Which precise structure is picked is to suit the processing application, typically by profiling the information and its serialization.
+It is recommended that the information encoded in the structure (including the order) be derived from data available in the general data set,
+even though the statements that guide the structure are not necessarily encoded in the subset of data that is being structured.
+
+### Possible variations
+
+* Each URI is tagged with whether it is intended to be dereferenced or used as an identifier. <!-- from CB: think about alternative universe in which links and identifiers can be separated...? -->
+* Equivalence of literals over CBOR packing could be revisited; literals could gain an identity from all their outgoing trees being identical. (But that'd need an exception for Null literals). It might help to explicitly limit these sub-trees.
+
+### Interaction model
 
 The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
 automated software agent can change the application state by
