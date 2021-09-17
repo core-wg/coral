@@ -235,6 +235,19 @@ Which precise structure is picked is to suit the processing application, typical
 It is recommended that the information encoded in the structure (including the order) be derived from data available in the general data set,
 even though the statements that guide the structure are not necessarily encoded in the subset of data that is being structured.
 
+Serializations like the one in {{binary}} have even more choices than the structured information model:
+They can choose to use or not use packed CBOR to compress parts,
+can spell out URIs in full or use relative references,
+or can exercise freedoms of the CBOR encoding.
+Variation there is not to have an influence on the interpretation of a CoRAL document.
+<!--
+However, applications using CBOR can require that a particular subset of the choices taken.
+or
+Applications should not make any particular requirements on these to ensure interoperability.
+or
+Some of these may be profiled, some not.
+-->
+
 ### Possible variations
 
 * Each URI is tagged with whether it is intended to be dereferenced or used as an identifier. <!-- from CB: think about alternative universe in which links and identifiers can be separated...? -->
