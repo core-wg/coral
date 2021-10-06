@@ -329,6 +329,53 @@ a (so far unspecified) packing was picked, resulting in a binary CBOR file with 
 
 Note that the "temperature-c" interface and "sensor" resource type get code points in the link-format dictionary because they are of reg-name style and thus would be registered as CoRE Parameters, and be included in the packing as well.
 
+#### Literal example
+
+To illustrate the handling options for literals, a link example of {{RFC8288}} is converted.
+
+(Note that even the conversion scheme hinted at above for {{RFC6690}} link format makes no claims at being applicable to general purpose web links like the below;
+this is merely done to demonstrate how literals can be handled.
+The example even so happens well illustrate that point:
+General link attributes may only be valid on the target when the link is followed in that direction ("letztes Kapitel" means last chapter),
+whereas convertible <!-- a term that'll need more explaining when it's later defined --> link-format documents use titles that apply to the described resource independent of which link is currently being followed.)
+
+~~~
+ Link: </TheBook/chapter2>;
+         rel="previous"; title*=UTF-8'de'letztes%20Kapitel,
+~~~
+{: #fig-8288-orig title='Original link about a book chapter from RFC8288'}
+
+In the currently described model,
+the extracted data would be:
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| http://.../ | rel:previous | http://.../TheBook/chapter2 |
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" instance 44 |
+| "letztes Kapitel" instance 44 | xml:lang | "de" |
+{: #fig-8288-data-now title='Information model extracted using the current "all literals are unique" model'}
+
+If the alternative literals-with-properties approach were chosen, the extraction would produce:
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| http://.../ | rel:previous | http://.../TheBook/chapter2 |
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with xml:lang "de" |
+{: #fig-8288-data-properties title='Information model extracted using the current "all literals are unique" model'}
+
+In CBOR serialization, both would produce the same output:
+
+~~~
+[
+  [2, 6(...) / rel:previous /, cri"/TheBook/chapter2", [
+    [2, simple(15) / item 15 for linkformat:title /, "letztes Kapitel", [
+      [2, 6(...) / xml:lang /, "de"]
+    ]]
+  ]]
+]
+~~~
+{: #fig-8288-serialzied title='Serialization of the RFC8288-based example'}
+
 ### Interaction model
 
 The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
