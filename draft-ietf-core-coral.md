@@ -153,6 +153,8 @@ as two specialized CoRAL serialization formats.
 
 ## Data and Interaction Model
 
+<!--
+
 The data model derives from the Web Linking model of {{RFC8288}} and
 consists primarily of two elements: "links" that describe the
 relationship between two resources and the type of that relationship;
@@ -164,6 +166,221 @@ in a way similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-co
 In contrast to RDF, however, the focus of CoRAL is not on the
 description of a graph of resources, but on the discovery of possible
 future application states.
+
+-->
+
+### Definitions
+
+The *basic CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:
+Data is expressed as an (unordered) set of triples (also called statements),
+consisting of a subject, a predicate and an object.
+The predicate is always a URI, and subject and object are each either a URI, or a concrete CBOR object (a literal).
+All URIs here are limited to the syntax-based normalized form of {{RFC3986}} Section 6.2.2.
+
+These triples form a directed multigraph with the subject and object being source and destination, and the predicate a description <!-- not "label", because that implies uniqueness of the labels in Wikipedia definition --> on the edge.
+That graph is equivalent to the data.
+
+To form a set and a graph, we define an equivalence relation:
+URIs are only equal to URIs and if they are identical byte-wise.
+Literals carry an identity from their serialization format (think of it as the file and cursor position from which it was read -- but if cbor-packed is involved it's more like the stack of cursors at parsing time),
+and are only equivalent to themselves.
+Triples are equivalent to each other if their subject, predicate and object are pair-wise equivalent.
+
+The *CoRAL structured information model* is a sequence of "passings" the basic model's edges,
+where
+
+* each edge is passed at least one time in total,
+* each edge is passed at most one time after each passing that ends in its start point
+  (with the obvious exception that edges from the root node can be passed once from the start), and
+* between a passing of an edge from A to B and a later passing from B to C,
+  passings can only be along edges that can be reached from B along the graph,
+  until B is the end of a different passing.
+
+The passings starts at the root node, defined as the URI from which the document is obtained.
+<!-- Terminology still to be enhanced, asking around at https://cs.stackexchange.com/questions/144008/terminology-for-multiply-visiting-walks-of-dags -->
+
+For better understanding,
+think of the structured information model as a sort of tree spanning from the root node,
+with the oddity that when a node is reached along two different edges (which a normal tree doesn't do),
+it is up to the builder of the tree whether to describe anything children of the entered node
+on one parent or on the other parent,
+on both,
+or to describe some children at the first and others at a later occasion.
+<!-- also the sequences can even be different, which is something at least the serialization supports;
+maybe we may want to put a stop to the madness there and impose order,
+or someone comes up with a reason why we actually want that. -->
+
+### Observations
+
+The structured form of a data set is in general not unique:
+If a node has more than one child, their sequence can be varied.
+If a node has more than one parent, its children may be expressed on any non-empty set of its parents
+to obtain a structured data set that expresses the same data set.
+
+In general, arbitrary basic data can not be expressed in a structured data set, because
+
+* There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
+* There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
+
+In particular, the precise data from one structured information document can only be expressed at the same URI.
+However, statements can be added to make a data set that is expressible elsewhere,
+and subsets of the data can be taken and expressed.
+
+Null literals are not special compared to other literals -- they just happen to work like RDF blank nodes,
+and are also called blank nodes.
+
+Forms are not special in the information model, but are merely statements around a blank node.
+They can be special in serialization formats (which have more efficient notations for them),
+and are used by the interaction model for special operations.
+
+The structured information model contains more information than the basic information model.
+\[ TBD put this into a different context because it's not an observation any more: \]
+Which precise structure is picked is to suit the processing application, typically by profiling the information and its serialization.
+It is recommended that the information encoded in the structure (including the order) be derived from data available in the general data set,
+even though the statements that guide the structure are not necessarily encoded in the subset of data that is being structured.
+
+Serializations like the one in {{binary}} have even more choices than the structured information model:
+They can choose to use or not use packed CBOR to compress parts,
+can spell out URIs in full or use relative references,
+or can exercise freedoms of the CBOR encoding.
+Variation there is not to have an influence on the interpretation of a CoRAL document.
+<!--
+However, applications using CBOR can require that a particular subset of the choices taken.
+or
+Applications should not make any particular requirements on these to ensure interoperability.
+or
+Some of these may be profiled, some not.
+-->
+
+### Possible variations
+
+* Each URI is tagged with whether it is intended to be dereferenced or used as an identifier. <!-- from CB: think about alternative universe in which links and identifiers can be separated...? -->
+* Equivalence of literals over CBOR packing could be revisited; literals could gain an identity from all their outgoing trees being identical. (But that'd need an exception for Null literals). It might help to explicitly limit these sub-trees.
+* Alternatively, literals in the model could be replaced with this, and be disallowed in the subject position:
+
+  Literals can have properties in addition to their literal (CBOR) value.
+  These properties are expressed in key-value pairs very similar to statements about the literal
+  in that the keys are URIs, the values URIs or literals,
+  and keys can occur multiple times.
+  (In serializations like {{binary}}, they are expressed exactly the same).
+  However, unlike statements, these properties of the literal and
+  (transitively) part of the literal's identity,
+  and are always expressed completely in the structured information model.
+
+  If this model is adopted,
+  literals obtain their identity from being identical in value and all properties in an unordered comparison.
+  `null` values need to be excluded from literals,
+  as they need to retain the instance-of-their-own semantics.
+
+### Examples
+
+This subsection illustrates the information model and serialization based on an example from {{RFC6690}}:
+
+~~~~
+</sensors>;ct=40;title="Sensor Index",
+</sensors/temp>;rt="temperature-c";if="sensor",
+</sensors/light>;rt="light-lux";if="sensor",
+<http://www.example.com/sensors/t123>;anchor="/sensors/temp";rel="describedby",
+</t>;anchor="/sensors/temp";rel="alternate"
+~~~~
+{: #fig-6690-orig title='Original example at coap://.../.well-known/core'}
+
+After an extraction (currently not defined in this document), this list represents the content of the basic information model representing the above.
+For the basic model, the table is to be considered unsorted in the first step.
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| coap://.../ | rel:hosts | coap://.../sensors |
+| coap://.../sensors | linkformat:ct | 40 |
+| coap://.../sensors | linkformat:title | "Sensor Index" |
+| coap://.../ | http://www.iana.org/assignments/relation/hosts | coap://.../sensors/temp |
+| coap://.../sensors/temp  | linkformat:rt | rt:temperature-c |
+| coap://.../sensors/temp  | linkformat:if | if:sensor |
+| coap://.../sensors/temp  | rel:describedby | http://www.example.com/sensors/t123 |
+| coap://.../sensors/temp  | rel:alternate | coap://.../t |
+| coap://.../ | http://www.iana.org/assignments/relation/hosts | coap://.../sensors/light |
+| coap://.../sensors/light | linkformat:rt | rt:light-lux |
+| coap://.../sensors/light | linkformat:if | if:sensor |
+{: #fig-6690-data title='Basic (and, through the sequence, Strucutred) Information Model extracted from there (using CURIEs: rel = http://www.iana.org/assignments/relation/, linkformat is TBD in the conversion, if, rt is TBD with IANA).'}
+
+During extraction, some information on item ordering was preserved into the structured data.
+Note that while the CoRAL structured data preserves some sequence aspects of the Link-Format file
+(like the order of attributes),
+others (like the relative order of links from different contexts) are deemed irrelevant and not preserved.
+
+For serialization,
+a (so far unspecified) packing was picked, resulting in a binary CBOR file with this CBOR diagnostic notation:
+
+~~~
+[
+  [2, simple(10) / item 10 for rel:hosts /, cri"/sensors", [
+    [2, 6(2) / item 20 for linkformat:ct /, 40],
+    [2, simple(15) / item 15 for linkformat:title /, "Sensor Index"]
+  ]],
+  [2, simple(10) / item 10 for rel:hosts /, cri"/sensors/temp", [
+    [2, 6(1) / item 18 for linkformat:if /, 6(200) / cri"http:∕∕TBD∕...∕temperature-c" /],
+    [2, 6(-2) / item 19 for linkformat:rt /, 6(250) / cri"http:∕∕TBD∕...∕sensor" /],
+    [2, simple(12) / item 12 for rel:describedby /, cri"http://www.example.com/sensors/t123"],
+    [2, simple(11) / item 11 for rel:alternate /, cri"/t"]
+  ]],
+  [2, 10 / item10 for rel:hosts /, cri"/sensors/light", [
+    [2, 6(1) / item 18 for linkformat:if /, 6(-201)],
+    [2, 6(-2) / item 19 for linkformat:rt /, 6(250)]
+  ]]
+]
+~~~
+{: #fig-6690-serialzied title='Serialized CoRAL file in diagnostic notation.'}
+
+Note that the "temperature-c" interface and "sensor" resource type get code points in the link-format dictionary because they are of reg-name style and thus would be registered as CoRE Parameters, and be included in the packing as well.
+
+#### Literal example
+
+To illustrate the handling options for literals, a link example of {{RFC8288}} is converted.
+
+(Note that even the conversion scheme hinted at above for {{RFC6690}} link format makes no claims at being applicable to general purpose web links like the below;
+this is merely done to demonstrate how literals can be handled.
+The example even so happens well illustrate that point:
+General link attributes may only be valid on the target when the link is followed in that direction ("letztes Kapitel" means last chapter),
+whereas convertible <!-- a term that'll need more explaining when it's later defined --> link-format documents use titles that apply to the described resource independent of which link is currently being followed.)
+
+~~~
+ Link: </TheBook/chapter2>;
+         rel="previous"; title*=UTF-8'de'letztes%20Kapitel,
+~~~
+{: #fig-8288-orig title='Original link about a book chapter from RFC8288'}
+
+In the currently described model,
+the extracted data would be:
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| http://.../ | rel:previous | http://.../TheBook/chapter2 |
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" instance 44 |
+| "letztes Kapitel" instance 44 | xml:lang | "de" |
+{: #fig-8288-data-now title='Information model extracted using the current "all literals are unique" model'}
+
+If the alternative literals-with-properties approach were chosen, the extraction would produce:
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| http://.../ | rel:previous | http://.../TheBook/chapter2 |
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with xml:lang "de" |
+{: #fig-8288-data-properties title='Information model extracted using the current "all literals are unique" model'}
+
+In CBOR serialization, both would produce the same output:
+
+~~~
+[
+  [2, 6(...) / rel:previous /, cri"/TheBook/chapter2", [
+    [2, simple(15) / item 15 for linkformat:title /, "letztes Kapitel", [
+      [2, 6(...) / xml:lang /, "de"]
+    ]]
+  ]]
+]
+~~~
+{: #fig-8288-serialzied title='Serialization of the RFC8288-based example'}
+
+### Interaction model
 
 The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
 automated software agent can change the application state by
