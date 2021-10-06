@@ -268,6 +268,67 @@ Some of these may be profiled, some not.
   `null` values need to be excluded from literals,
   as they need to retain the instance-of-their-own semantics.
 
+### Examples
+
+This subsection illustrates the information model and serialization based on an example from {{RFC6690}}:
+
+~~~~
+</sensors>;ct=40;title="Sensor Index",
+</sensors/temp>;rt="temperature-c";if="sensor",
+</sensors/light>;rt="light-lux";if="sensor",
+<http://www.example.com/sensors/t123>;anchor="/sensors/temp";rel="describedby",
+</t>;anchor="/sensors/temp";rel="alternate"
+~~~~
+{: #fig-6690-orig title='Original example at coap://.../.well-known/core'}
+
+After an extraction (currently not defined in this document), this list represents the content of the basic information model representing the above.
+For the basic model, the table is to be considered unsorted in the first step.
+
+| Subject | Predicate | Object |
+|---------+-----------+--------+
+| coap://.../ | rel:hosts | coap://.../sensors |
+| coap://.../sensors | linkformat:ct | 40 |
+| coap://.../sensors | linkformat:title | "Sensor Index" |
+| coap://.../ | http://www.iana.org/assignments/relation/hosts | coap://.../sensors/temp |
+| coap://.../sensors/temp  | linkformat:rt | rt:temperature-c |
+| coap://.../sensors/temp  | linkformat:if | if:sensor |
+| coap://.../sensors/temp  | rel:describedby | http://www.example.com/sensors/t123 |
+| coap://.../sensors/temp  | rel:alternate | coap://.../t |
+| coap://.../ | http://www.iana.org/assignments/relation/hosts | coap://.../sensors/light |
+| coap://.../sensors/light | linkformat:rt | rt:light-lux |
+| coap://.../sensors/light | linkformat:if | if:sensor |
+{: #fig-6690-data title='Basic (and, through the sequence, Strucutred) Information Model extracted from there (using CURIEs: rel = http://www.iana.org/assignments/relation/, linkformat is TBD in the conversion, if, rt is TBD with IANA).'}
+
+During extraction, some information on item ordering was preserved into the structured data.
+Note that while the CoRAL structured data preserves some sequence aspects of the Link-Format file
+(like the order of attributes),
+others (like the relative order of links from different contexts) are deemed irrelevant and not preserved.
+
+For serialization,
+a (so far unspecified) packing was picked, resulting in a binary CBOR file with this CBOR diagnostic notation:
+
+~~~
+[
+  [2, simple(10) / item 10 for rel:hosts /, cri"/sensors", [
+    [2, 6(2) / item 20 for linkformat:ct /, 40],
+    [2, simple(15) / item 15 for linkformat:title /, "Sensor Index"]
+  ]],
+  [2, simple(10) / item 10 for rel:hosts /, cri"/sensors/temp", [
+    [2, 6(1) / item 18 for linkformat:if /, 6(200) / cri"http:∕∕TBD∕...∕temperature-c" /],
+    [2, 6(-2) / item 19 for linkformat:rt /, 6(250) / cri"http:∕∕TBD∕...∕sensor" /],
+    [2, simple(12) / item 12 for rel:describedby /, cri"http://www.example.com/sensors/t123"],
+    [2, simple(11) / item 11 for rel:alternate /, cri"/t"]
+  ]],
+  [2, 10 / item10 for rel:hosts /, cri"/sensors/light", [
+    [2, 6(1) / item 18 for linkformat:if /, 6(-201)],
+    [2, 6(-2) / item 19 for linkformat:rt /, 6(250)]
+  ]]
+]
+~~~
+{: #fig-6690-serialzied title='Serialized CoRAL file in diagnostic notation.'}
+
+Note that the "temperature-c" interface and "sensor" resource type get code points in the link-format dictionary because they are of reg-name style and thus would be registered as CoRE Parameters, and be included in the packing as well.
+
 ### Interaction model
 
 The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
