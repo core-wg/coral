@@ -214,7 +214,7 @@ If a node has more than one child, their sequence can be varied.
 If a node has more than one parent, its children may be expressed on any non-empty set of its parents
 to obtain a structured data set that expresses the same data set.
 
-In general, arbitrary data can not be expressed in a structured data set, because
+In general, arbitrary basic data can not be expressed in a structured data set, because
 * There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
 * There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
 
@@ -252,6 +252,21 @@ Some of these may be profiled, some not.
 
 * Each URI is tagged with whether it is intended to be dereferenced or used as an identifier. <!-- from CB: think about alternative universe in which links and identifiers can be separated...? -->
 * Equivalence of literals over CBOR packing could be revisited; literals could gain an identity from all their outgoing trees being identical. (But that'd need an exception for Null literals). It might help to explicitly limit these sub-trees.
+* Alternatively, literals in the model could be replaced with this, and be disallowed in the subject position:
+
+  Literals can have properties in addition to their literal (CBOR) value.
+  These properties are expressed in key-value pairs very similar to statements about the literal
+  in that the keys are URIs, the values URIs or literals,
+  and keys can occur multiple times.
+  (In serializations like {{binary}}, they are expressed exactly the same).
+  However, unlike statements, these properties of the literal and
+  (transitively) part of the literal's identity,
+  and are always expressed completely in the structured information model.
+
+  If this model is adopted,
+  literals obtain their identity from being identical in value and all properties in an unordered comparison.
+  `null` values need to be excluded from literals,
+  as they need to retain the instance-of-their-own semantics.
 
 ### Interaction model
 
