@@ -168,6 +168,7 @@ description of a graph of resources, but on the discovery of possible
 future application states.
 
 -->
+
 ### Definitions
 
 The *basic CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:
@@ -187,12 +188,14 @@ Triples are equivalent to each other if their subject, predicate and object are 
 
 The *CoRAL structured information model* is a sequence of "passings" the basic model's edges,
 where
+
 * each edge is passed at least one time in total,
 * each edge is passed at most one time after each passing that ends in its start point
   (with the obvious exception that edges from the root node can be passed once from the start), and
 * between a passing of an edge from A to B and a later passing from B to C,
   passings can only be along edges that can be reached from B along the graph,
   until B is the end of a different passing.
+
 The passings starts at the root node, defined as the URI from which the document is obtained.
 <!-- Terminology still to be enhanced, asking around at https://cs.stackexchange.com/questions/144008/terminology-for-multiply-visiting-walks-of-dags -->
 
@@ -215,6 +218,7 @@ If a node has more than one parent, its children may be expressed on any non-emp
 to obtain a structured data set that expresses the same data set.
 
 In general, arbitrary basic data can not be expressed in a structured data set, because
+
 * There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
 * There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
 
