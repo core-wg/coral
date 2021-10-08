@@ -2451,6 +2451,79 @@ This section defines a default dictionary that is assumed when the `application/
 {: #default-dictionary-entries align="center" cols="r l"
 title="Default Dictionary" }
 
+# Mappings to other formats
+
+While CoRAL has an information model of its own,
+its data can be converted to different extents with other data formats.
+
+Using these conversions is generally application specific,
+i.e., this document does not claim equivalence of (say) a given RDF its converted CoRAL document,
+but applications can choose use these conversions if the limitations described with the conversion are acceptable to them.
+
+## RDF
+
+\[ This section is assuming the property model of literals. \]
+
+\[ TBD: Expand / introduce the common CURIEs used here. \]
+
+RDF and the CoRAL Basic Information Model can be interconverted losslessly,
+as long as some basic restrictions are met:
+
+* All involved IRIs (on the RDF side) and CRIs (on the CoRAL side) can be converted;
+  that means that round-tripping IRIs through CoRAL converts them to the equivalent URIs.
+
+  The precise limitations of what CRIs can not express are described in {{I-D.ietf-core-href}} and out of scope of this document.
+
+  A possible extension to CoRAL that allows tagged URIs in place of CRIs could remove this limitation.
+  (CRIs that can not be expressed as URIs are not valid anyway).
+
+* A blank node of CoRAL can only have one incoming edge in serialization.
+  RDF documents with multiply connected blank nodes need to undergo skolemization before they can be expressed in CoRAL.
+
+* CoRAL supports arbitrary literal objects, including CBOR tags, and arbitrary properties.
+  For each object that is used in a literal, a mapping to a datatype (typically XSD) needs to be defined.
+  Properties of CoRAL literals need to be limited to those properties expressible in RDF (datatype, language and/or internationalization).
+
+  When literals are normalized in RDF according to XSD rules,
+  or the literal mappings to RDF datatypes are ambiguous on the CoRAL side,
+  round-tripping CoRAL through RDF can be lossy to the extent of the normalization or ambiguity.
+
+* As always with expressing arbitrary graphs of the Basic Information Model in serialization,
+  if there is no directed tree spanning the directed graph,
+  statements need to be introduced to reach some topics.
+
+Each statement in RDF is mapped to a statement in CoRAL.
+Any IRI it contains in RDF is mapped to an equivalent CRI in CoRAL and vice versa.
+Any blank node of RDF is converted to a blank node (serialized as a null) in CoRAL.
+Literals are converted as follows:
+
+* CBOR text strings are coverted to RDF strig literals.
+
+  If they have a CRI-valued rdf:datatype property, the corresponding URI is set as the RDF literal's datatype.
+
+  If they have a string-valued xml:lang property, the corresponding URI is set as the RDF literal's language;
+  this is requires the datatype to be rdf:langString or absent.
+
+  If any other properties are present, the conversion fails.
+
+* CBOR literals from the following list are converted to their corresponding text representations of the datatype from the following table:
+
+| CDDL | XSD datatype |
+|-----|-------------------------------------------------------------|
+| bool | xsd:boolean |
+| integer | xsd:integer |
+| float | xsd:double |
+| decfrac | xsd:decimal |
+| bytes | xsd:base64Binary or xsd:base64hexBinary (?) |
+| tdate | xsd:date |
+{: #cddl-xsd-mappings title="Mapping between CDDL types and XSD datatypes" }
+
+  If a CBOR literal has a concrete rdf:datatype attached,
+  and \[ there is probably some XSD subtyping term we can use here \], that type is set as the datatype instead.
+
+\[ TBD: Check compatibilities, give type for at least the basic tags \]
+
+* RDF literals are mapped to any CoRAL literal that yields an equivalent RDF literal in the opposite direction.
 
 # Change Log
 {:removeinrfc}
