@@ -2539,12 +2539,32 @@ The FOAF namespace provides this example:
 ~~~~~
 {: #fig-foaf-orig title='Original FOAF file at http://.../me.xml'}
 
-Converted, assuming no particular profiling or dictionary setup, this could be:
+Converted, assuming no particular profiling or dictionary setup
+(and an ad-hoc table following {{Section 3.1 of I-D.ietf-cbor-packed}}),
+this could be:
 
 ~~~~~
-TBD
+51([[cri'http://danbri.org/'], [<<-3, "xmlns.com", ["foaf", "0.1"], null>>], [], [
+  [2, cri'http://TBD/talks-about', cri'/me.xml#danbri',
+    [2, cri'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 6(<<'Person'>>)],
+    [2, 6(<<'name'>>), "Dan Brickley"],
+    [2, 6(<<'homepage'>>), 6(0)],
+    [2, 6(<<'openid'>>), 6(0)],
+    [2, 6(<<'img'>>), cri'/images/me.jpg']
+  ]
+]])
 ~~~~~
 {: #fig-foaf-converted title='Serialized FOAF file at http://.../me.coral'}
+
+The TBD:talks-about statement is introduced to bridge the gap between the basic and the necessarily structured information model.
+\[ TBD: Introduce that somewhere else more generally. \]
+
+In this packing, an invalid CRI (with trailing null leaving room for a fragment identifier to be added through packing)
+is added into the prefixes list.
+It is not sure whether this particular trick will ever be permitted by any of the profilings,
+or whether this is better done with base URIs.
+The mechanism is used because right now it works with the specifications involved without the need for further text,
+and is likely to be replaced by better mechanisms in later revisions of this document.
 
 # Change Log
 {:removeinrfc}
