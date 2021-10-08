@@ -2525,6 +2525,27 @@ Literals are converted as follows:
 
 * RDF literals are mapped to any CoRAL literal that yields an equivalent RDF literal in the opposite direction.
 
+### Example
+
+The FOAF namespace provides this example:
+
+~~~~~
+<foaf:Person rdf:about="#danbri" xmlns:foaf="http://xmlns.com/foaf/0.1/">
+  <foaf:name>Dan Brickley</foaf:name>
+  <foaf:homepage rdf:resource="http://danbri.org/" />
+  <foaf:openid rdf:resource="http://danbri.org/" />
+  <foaf:img rdf:resource="/images/me.jpg" />
+</foaf:Person>
+~~~~~
+{: #fig-foaf-orig title='Original FOAF file at http://.../me.xml'}
+
+Converted, assuming no particular profiling or dictionary setup, this could be:
+
+~~~~~
+TBD
+~~~~~
+{: #fig-foaf-converted title='Serialized FOAF file at http://.../me.coral'}
+
 # Change Log
 {:removeinrfc}
 
