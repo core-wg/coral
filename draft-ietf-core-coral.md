@@ -223,7 +223,9 @@ In general, arbitrary basic data can not be expressed in a structured data set, 
 * There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
 
 In particular, the precise data from one structured information document can only be expressed at the same URI.
-However, statements can be added to make a data set that is expressible elsewhere,
+However, statements can be added to make a data set that is expressible elsewhere
+<!-- possibly shove around to make use of CURIEs introduced at some point -->
+(this document defines the `carries-information-about` relation type leading to the `http://www.iana.org/assignments/relation/carries-information-about` predicate being usable here),
 and subsets of the data can be taken and expressed.
 
 Null literals are not special compared to other literals -- they just happen to work like RDF blank nodes,
@@ -285,7 +287,7 @@ This subsection illustrates the information model and serialization based on an 
 ~~~~
 {: #fig-6690-orig title='Original example at coap://.../.well-known/core'}
 
-After an extraction (currently not defined in this document), this list represents the content of the basic information model representing the above.
+After an extraction described in {{conversion-6690}}, this list represents the content of the basic information model representing the above.
 For the basic model, the table is to be considered unsorted in the first step.
 
 | Subject | Predicate | Object |
@@ -309,7 +311,7 @@ Note that while the CoRAL structured data preserves some sequence aspects of the
 others (like the relative order of links from different contexts) are deemed irrelevant and not preserved.
 
 For serialization,
-a (so far unspecified) packing was picked, resulting in a binary CBOR file with this CBOR diagnostic notation:
+the use of the packing described with the conversion results in a binary CBOR file with this CBOR diagnostic notation:
 
 ~~~
 [
@@ -331,9 +333,11 @@ a (so far unspecified) packing was picked, resulting in a binary CBOR file with 
 ~~~
 {: #fig-6690-serialzied title='Serialized CoRAL file in diagnostic notation.'}
 
+\[ TBD: Numbers are made up \]
+
 Note that the "temperature-c" interface and "sensor" resource type get code points in the link-format dictionary because they are of reg-name style and thus would be registered as CoRE Parameters, and be included in the packing as well.
 
-#### Literal example
+#### Literal example {#literalexample}
 
 To illustrate the handling options for literals, a link example of {{RFC8288}} is converted.
 
@@ -2545,7 +2549,7 @@ this could be:
 
 ~~~~~
 51([[cri'http://danbri.org/'], [<<-3, "xmlns.com", ["foaf", "0.1"], null>>], [], [
-  [2, cri'http://TBD/talks-about', cri'/me.xml#danbri',
+  [2, cri'http://www.iana.org/assignments/relation/carries-information-about', cri'/me.xml#danbri',
     [2, cri'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 6(<<'Person'>>)],
     [2, 6(<<'name'>>), "Dan Brickley"],
     [2, 6(<<'homepage'>>), 6(0)],
@@ -2565,6 +2569,119 @@ It is not sure whether this particular trick will ever be permitted by any of th
 or whether this is better done with base URIs.
 The mechanism is used because right now it works with the specifications involved without the need for further text,
 and is likely to be replaced by better mechanisms in later revisions of this document.
+
+## CoRE Link Format {#convert-6690}
+
+Generic information in Web Links as described in {{RFC8288}} can not be converted to CoRAL in any practical way:
+Attributes are not managed,
+and it is not clear from the syntax whether an attribute is making a statement about the link or its target.
+(See {{literalexample}} for an example).
+<!-- "It is broken, at least for our applications" -->
+
+<!-- We can't usurp the semantics without incompatibly updating RFC6690, so we limit scope: -->
+Applications that limit their use of links to the common attributes of the CoRE ecosystem,
+typically serialized in {{RFC6690}} Link Format,
+this conversion may be convenient.
+It defines terms for common properties used for discovering resources,
+and describes a way to compatibly extend the mapping.
+
+<!-- Better terminology than "necessarily" (in all-caps?) appreciated! -->
+In several points the mapping describes URIs to necessarily have an entry in the packing table;
+this refers to the profiling described further down.
+Parts of a Link Format document that would need an entry but do not have one
+can not be converted;
+these are ignored in the conversion unless the converter is configured to be strict and fail the complete conversion in that case.
+
+This mapping from Link Format to CoRAL is performed as follows:
+* For each relation in a link,
+  a statement is created mapping
+  the link context to the subject,
+  the link target to the object
+  and the relation to the predicate.
+
+  If the relation is of ext-rel-type, it is used as a URI as is.
+  Otherwise it is a registered value,
+  prefixed with `http://www.iana.org/assignments/relation/`
+  and necessarily packed using table TBD.
+  (This is equivalent to the RPP mechanism for attribute values).
+
+* Each target attribute is converted to one or more statements by the mechanism indicated for the attribute name in the following table.
+  Statements produced from a link have the target as its subject,
+  the attribute name without any trailing asterisk (prefixed with `https://TBD/` \[ to be picked together with IANA as it'll be a registry \]) as its predicate,
+  and the object(s) depending on the mechanism.
+
+  Attributes are necessarily listed in this table.
+
+~~~
+| TN | Name | Mechanism |
+|---------+-----------+--------+
+| TBD | hreflang | \[ do we need that? \] |
+| TBD | media | \[ do we need that? \] |
+| 16 | title | string |
+| TBD | type | \[ do we need that? \] |
+| 0 | rt | WSSP; RPP `http://www.iana.org/TBDr/` |
+| 1 | if | WSSP; RPP `http://www.iana.org/TBDi/` |
+| 2 | sz | int |
+| 3 | ct | WSSP; int |
+~~~
+{: #target-attributes title='Initial entries of the target attribute registry (TN = table number)'}
+
+Available mechanisms are:
+
+* SPSP (space split):
+  Link format values are split at space characters (SP in the RFC6690 ABNF),
+  and all values treated using another mechanism.
+* string:
+  The attribute value is stored as a text string literal.
+  If the Link Format attribute is language tagged
+  (i.e. when the attribute name ends with an asterisk and the value is of ext-value shape),
+  the literal gets the language set as an xml:lang property.
+* int:
+  The target attribute is processed as an ASCII encoded number
+  and expressed as an integer literal.
+  A failing conversion is treated like an unknown registered value:
+  It is ignored unless configured otherwise.
+* RPP (registered-prefix / packed):
+  The input value (often the result of the SPSP mechanism)
+  is parsed according to the relation-type ABNF production.
+  If it is of ext-rel-type,
+  it is expressed as that URI.
+  If it is prefixed with the string indicated with the mechanism,
+  and necessarily compressed through table TBD.
+
+All currently registered link attributes are used in the CoRE ecosystem
+as indicating a property of the target that is independent of the link being followed.
+If this conversion is to be extended to cover attributes that pertain to the full link being followed
+(typically along with one or more link relations),
+the relevant relations are not expressed as a single statement,
+but as a form, i.e. as two statements linking the context to a blank node
+and the blank node to the target;
+the attributes are attached to the blank node.
+The precise mechanism out of scope for this document,
+and left to those who first register such an attribute.
+
+Some structure can be carried over from Link Format to the structured model:
+The sequences of links gets reused,
+and the set and sequence of attributes in a particular occurrence of a link get applied to the statement produced from the link
+(or all the statements, if the link has multiple link relations).
+Statements whose subject is not the root node
+are attached to the root node using the necessarily packed
+`http://www.iana.org/assignments/relation/carries-information-about` property.
+Statements about URLs mentioned elsewhere in the document
+can be expressed there instead. <!-- generally once, but not stopping anybody... -->
+
+Link relations of the reg-name form,
+link attributes,
+and attribute values from the RPP mechanism
+MUST be serialized using packed CBOR as initialized in table TBD.
+No other packing is used.
+A consumer MAY ignore any items compressed through the dictionary for which it does not know the expanded version:
+These necessarily represent statements that involve terms the consumer does not understand.
+
+\[ As an alternative,
+packing attributes together with their URIs is considered:
+Rather than `[2, 6(/ attr:rt /), 6(/ rt:core.rd /)]` we could have `6(rt-core)` right away;
+unregistered values would stay `[2, 6(/ attr:rt /), value]` or maybe `254([value])` using prefix packing. \]
 
 # Change Log
 {:removeinrfc}
