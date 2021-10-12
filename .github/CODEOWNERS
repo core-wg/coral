@@ -1,2 +1,3 @@
-# Automatically generated CODEOWNERS file.
-draft-ietf-core-coral.md TBD
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-ietf-core-coral.md klaus.hartke@ericsson.com
