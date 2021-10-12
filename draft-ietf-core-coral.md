@@ -407,7 +407,7 @@ Format](#RFC6690).
 For easy representation of CoRAL documents in text,
 CBOR diagnostic notation is used.
 Along with indentation and comments,
-the notation introduced in {{I-D.bormann-cbor-edn-literals}} is used to represent CRIs.
+the notation introduced in {{!I-D.bormann-cbor-edn-literals}} is used to represent CRIs.
 This format is not expected to be sent over the network.
 
 \[ To be discussed:
