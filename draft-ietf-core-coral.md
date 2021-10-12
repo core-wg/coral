@@ -1618,7 +1618,7 @@ The mapping from identifiers to IRIs is initially set to a copy of
 the mapping from identifiers to IRIs in the current environment.
 
 
-# Document Semantics
+# Document Semantics {#docsemantics}
 
 ## Submitting Documents
 
@@ -2499,6 +2499,7 @@ as long as some basic restrictions are met:
 Each statement in RDF is mapped to a statement in CoRAL.
 Any IRI it contains in RDF is mapped to an equivalent CRI in CoRAL and vice versa.
 Any blank node of RDF is converted to a blank node (serialized as a null) in CoRAL.
+(Beware that depending on the context established in {{docsemantics}}, the root node may be a URI or a blank node).
 Literals are converted as follows:
 
 * CBOR text strings are coverted to RDF strig literals.
