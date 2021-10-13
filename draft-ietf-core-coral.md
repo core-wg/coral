@@ -923,35 +923,17 @@ current environment.
 ## Dictionary Compression {#dictionary-compression}
 
 A document in the binary format MAY reference values from an external
-dictionary. This helps to reduce representation size and processing cost.
-Dictionary references can be used in place of
-link relation types,
-link targets,
-operation types,
-submission targets,
-form field types, and
-form field values.
+dictionary using Packed CBOR {{!I-D.ietf-cbor-packed}}.
+This helps to reduce representation size and processing cost.
 
-### Dictionary References
+Dictionary references can be used
+subject to \[ yet to be defined \] profiling.
 
-A dictionary reference is encoded as an unsigned integer. Where a
-dictionary reference cannot be expressed unambiguously, the unsigned
-integer is tagged with CBOR tag TBD6, as follows:
-
->
-~~~~ cddl
-relation-type /= uint
-link-target /= #6.TBD6(uint)
-operation-type /= uint
-submission-target /= #6.TBD6(uint)
-form-field-type /= uint
-form-field-value /= #6.TBD6(uint)
-~~~~
-
-A dictionary reference MUST NOT refer to a dictionary value that
-would otherwise not be syntactically allowed in that position. For
-example, a dictionary reference in the position of a link relation
-type cannot refer to a Boolean value; it can only refer to an IRI.
+Implementers should note that Packed CBOR is not designed to be uncompressed,
+but to be used in a compressed form.
+In particular, constrained devices may operate without even knowing what a given dictionary entry expands to
+(as long as they know its meaning)
+<!-- and may ignore unknown entries under certain conditions, depending on the outcome of https://github.com/core-wg/coral/issues/3 -->.
 
 
 ### Media Type Parameter
