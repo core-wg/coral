@@ -1,0 +1,122 @@
+\documentclass[aspectratio=169]{beamer}
+
+\setbeamertemplate{headline}
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% about the presentation
+\title{Constrained RESTful Application Languager (CoRAL)}
+\hypersetup{pdftitle={Constrained RESTful Application Languager (CoRAL)}}
+\subtitle{Interim status update}
+\date{2021-10-13}
+
+\hypersetup{colorlinks}
+
+% get page numbers without author and institute, especially given the institute hack later to get sizes consistent
+
+% thanks Andrea, from https://tex.stackexchange.com/questions/179304/redefining-infolines-in-beamer
+\defbeamertemplate*{footline}{infolines}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+% and, given that it has no deep structure and navigation can't be used through meetecho anyway, remove other clutter from there
+
+\beamertemplatenavigationsymbolsempty
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+\embedfile{Makefile}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Recap from last status update}\Large
+  \begin{itemize}
+    \item Information model merged
+      \begin{itemize}\large
+        \item Basic model contains statements (graph; ``</x> core:ct 40'')
+        \item Structured model shapes them (sequence of statements, nesting)
+        \item Forms and embedded payloads are built on top of the model
+      \end{itemize}
+    \bigskip
+    \item How to handle literals?
+      \begin{itemize}\large
+        \item[$-$] Entity with arbitrary outgoing edges
+
+          </g> core:label "Gift" (instance 1).\\
+          "Gift" (instance 1) xml:lang "en".
+''
+        \item[$+$] Value-with-properties
+
+          </g> core:label "Gift"@en.
+      \end{itemize}
+      \footnotesize (Not that it'd matter for the serialization\ldots)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{New in the editor's copy since last time}\Large
+  \begin{itemize}
+    \item Packed CBOR
+    \item CBOR diagnostic notation (with EDN) replaces text format
+    \item Mappings with Link Format and RDF
+
+      \bigskip
+
+      \em{``Applications that use links with the attribute semantics common in the CoRE ecosystem (typically used with RFC6690 Link Format) can use this conversion. ''}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Link Format mapping}\small
+  \begin{verbatim}
+</sensors>;ct=40;title="Sensor Index",
+</sensors/temp>;rt="temperature-c";if="sensor tag:example.com:mysensor",
+<http://www.example.com/sensors/t123>;anchor="/sensors/temp";rel="describedby"
+  \end{verbatim}
+
+  \begin{verbatim}
+[
+  [2, simple(10) / rel:hosts /, cri'/sensors', [
+    [2, 6(2) / core:ct /, 40],
+    [2, simple(15) / core:title /, 'Sensor Index']
+  ]],
+  [2, simple(10) / rel:hosts /, cri'/sensors/temp', [
+    [2, 6(1) / core:if /, 6(200) / cri'http:...temperature-c' /],
+    [2, 6(1) / core:if /, cri'tag:example.com:mysensor' ],
+    [2, 6(-2) / core:rt /, 6(250) / cri'http:...sensor' /],
+    [2, simple(12) / rel:describedby /, cri'http://www.example.com/sensors/t123'],
+  ]]
+]
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}{Current issues}\Large
+  \begin{itemize}
+    \item Reasons left for deterministic encoding? \href{https://github.com/core-wg/coral/issues/5}{\#5}
+    \item Lock in the ``property'' model of literals? \href{https://github.com/core-wg/coral/issues/10}{\#10}
+    \item Can we do without circular visitation? \href{https://github.com/core-wg/coral/issues/9}{\#9}
+
+      (And if so, do we want to use this for a flatter file format?)
+    \item Open or Closed World? \href{https://github.com/core-wg/coral/issues/3}{\#3}
+
+      (Not that we'd have to decide -- but allowing both, guide people to be open-world compatible.)
+  \end{itemize}
+\end{frame}
+
+\end{document}
