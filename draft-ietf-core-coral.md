@@ -287,7 +287,7 @@ This subsection illustrates the information model and serialization based on an 
 ~~~~
 {: #fig-6690-orig title='Original example at coap://.../.well-known/core'}
 
-After an extraction described in {{conversion-6690}}, this list represents the content of the basic information model representing the above.
+After an extraction described in {{convert-6690}}, this list represents the content of the basic information model representing the above.
 For the basic model, the table is to be considered unsorted in the first step.
 
 | Subject | Predicate | Object |
@@ -2545,7 +2545,7 @@ The FOAF namespace provides this example:
 {: #fig-foaf-orig title='Original FOAF file at http://.../me.xml'}
 
 Converted, assuming no particular profiling or dictionary setup
-(and an ad-hoc table following {{Section 3.1 of I-D.ietf-cbor-packed}}),
+(and an ad-hoc table following {{Section 3.1 of !I-D.ietf-cbor-packed}}),
 this could be:
 
 ~~~~~
