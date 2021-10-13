@@ -1869,9 +1869,9 @@ and it is not clear from the syntax whether an attribute is making a statement a
 <!-- "It is broken, at least for our applications" -->
 
 <!-- We can't usurp the semantics without incompatibly updating RFC6690, so we limit scope: -->
-Applications that limit their use of links to the common attributes of the CoRE ecosystem,
-typically serialized in {{RFC6690}} Link Format,
-this conversion may be convenient.
+Applications that use links with the attribute semantics common in the CoRE ecosystem
+(typically used with {{RFC6690}} Link Format)
+can use this conversion.
 It defines terms for common properties used for discovering resources,
 and describes a way to compatibly extend the mapping.
 
