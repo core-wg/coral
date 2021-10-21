@@ -1902,7 +1902,6 @@ This mapping from Link Format to CoRAL is performed as follows:
 
   Attributes are necessarily listed in this table.
 
-~~~
 | TN | Name | Mechanism |
 |---------+-----------+--------+
 | TBD | hreflang | \[ do we need that? \] |
@@ -1913,7 +1912,6 @@ This mapping from Link Format to CoRAL is performed as follows:
 | 1 | if | WSSP; RPP `http://www.iana.org/TBDi/` |
 | 2 | sz | int |
 | 3 | ct | WSSP; int |
-~~~
 {: #target-attributes title='Initial entries of the target attribute registry (TN = table number)'}
 
 Available mechanisms are:
