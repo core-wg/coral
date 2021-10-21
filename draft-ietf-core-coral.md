@@ -15,14 +15,14 @@ title: The Constrained RESTful Application Language (CoRAL)
 abbrev: Constrained RESTful Application Language
 wg: CoRE Working Group
 author:
-- ins: K. Hartke
-  name: Klaus Hartke
-  org: Ericsson
-  street: Torshamnsgatan 23
-  city: Stockholm
-  code: '16483'
-  country: Sweden
-  email: klaus.hartke@ericsson.com
+- ins: C. Amsüss
+  name: Christian Amsüss
+  email: christian@amsuess.com
+- ins: T. Fossati
+  name: Thomas Fossati
+  org: ARM
+  email: thomas.fossati@arm.com
+
 informative:
   RFC4287:
   RFC5789:
@@ -1996,8 +1996,8 @@ Changes from -00 to -01:
 # Acknowledgements
 {:unnumbered}
 
-CoRAL is heavily inspired by Mike Kelly's [JSON Hypertext Application
-Language](#HAL).
+The concept and original version of CoRAL (as well as CRIs) was developed by Klaus Hartke.
+It was heavily inspired by Mike Kelly's [JSON Hypertext Application Language](#HAL).
 
 The recommendations for minting IRIs have been adopted from [RDF 1.1
 Concepts and Abstract Syntax](#W3C.REC-rdf11-concepts-20140225) to
@@ -2005,9 +2005,7 @@ ease the interoperability between RDF predicates and link relation
 types.
 
 Thanks to
-{{{Christian Amsüss}}},
 {{{Carsten Bormann}}},
-{{{Thomas Fossati}}},
 {{{Jaime Jiménez}}},
 {{{Jim Schaad}}},
 {{{Sebastian Käbisch}}},
