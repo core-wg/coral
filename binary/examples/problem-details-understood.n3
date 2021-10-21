@@ -1,0 +1,13 @@
+# This is what a processor that does know the Python vocabulary (assumed to be
+# registered as prefix 1025 in the PD registry) would understand:
+
+@prefix pd: <https://TBD-pd/> .
+@prefix core: <https://TBD-core/> .
+@prefix python: <https://TBD-python/> .
+
+_:this pd:type python:uncaught-exception ;
+    python:exception-type python:ImportError ;
+    pd:detail "No module named 'link_header'" ;
+    python:backtrace-at [
+        = </guru-meditation/0815> ;
+        core:ct 60 ] .

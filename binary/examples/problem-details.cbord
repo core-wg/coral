@@ -1,0 +1,13 @@
+/ An error message like I think aiocoap could raise if configured with "users asre entitled to more verbose errors than 500" /
+
+/ Implied dictionary is the one to be shipped with problem-details /
+51(
+  28704 + 1025([ / prefix with out-reference in the problem-details registry that prepends in the (10, 3, 0) long Python dictionary /
+    [2, 6(10 + 0 / pd:type /), 6(0 / python:uncaught-exception /)],
+    [2, 6(2 / python:exception-type /), 6(5 / python:ImportError /)],
+    [2, 6(10 + 3 / pd:detail /), "No module named 'link_header'"],
+    [2, 6(1 / python:backtrace-at /), cri'/guru-meditation/0815', [
+      [2, 6(10 + 1024 + 3 / core:ct which pd ships after some slack for its own expansion /), 60 / CBOR, with some captures /],
+    ]]
+  ])
+)

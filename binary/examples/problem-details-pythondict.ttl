@@ -1,0 +1,64 @@
+# If the Python dict used in problem-details.cbord were to be described in a
+# machine readable form, it could look like this. It is written in Turtle, but
+# convertible to CoRAL. For CoRAL users like a class-2 processor that needs to
+# know to convert CoRAL dictionaries and create profiled documents from a sea
+# of triples, that CoRAL itself would be profiled to not include the more fancy
+# ontology parts.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix packed: <http://TBD-packed/> .
+@prefix coraldict: <http://TBD-coralict/> .
+
+@prefix pd: <https://TBD-pd/> .
+@prefix core: <https://TBD-core/> .
+@prefix python: <https://TBD-python/> .
+
+<> a owl:Ontology, packed:Dictionary, coraldict:Dictionary ;
+
+    packed:shared 10 ;
+    packed:prefix 3 ;
+    packed:suffix 0 ;
+
+    packed:shared_entry [
+        packed:offset 0 ;
+        packed:expansion python:uncaught-exception ;
+    ] ;
+
+    packed:shared_entry [
+        packed:offset 1 ;
+        packed:expansion python:backtrace-at ;
+        coraldict:useful-property core:ct ;
+    ] ;
+
+    packed:shared_entry [
+        packed:offset 2 ;
+        packed:expansion python:exception-type ;
+    ] ;
+
+    packed:shared_entry [
+        packed:offset 5 ;
+        packed:expansion python:ImportError ;
+    ] ;
+
+    coraldict:root-type pd:Problem ;
+    coraldict:maxdepth 2 ;
+    coraldict:uncompressed-predicates false ;
+    .
+
+python:backtrace-at a rdf:Property ;
+    rdfs:label "backtrace" ;
+    rdfs:domain pd:Problem ;
+    rdfs:comment "Location where a backtrace of the exception that caused the problem can be obtained, possibly only for a limited time" ;
+    rdfs:isDefinedBy <> ;
+    .
+
+python:exception-type a rdf:Property ;
+    rdfs:label "Type of exception raised" ;
+    rdfs:domain pd:Problem ;
+    rdfs:range python:Class ;
+    rdfs:isDefinedBy <> ;
+    .
+
+python:ImportError a python:Class .

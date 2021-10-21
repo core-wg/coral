@@ -1,0 +1,26 @@
+/ What could a simple dynlink entry look like in CoRAL?               /
+/                                                                     /
+/ This is mapped according to Appendix CoRE Link Format mapping, with /
+/ some assumptions[1] on how dynlink will develop (with dynlink terms /
+/ in the 50+ range).                                                  /
+/                                                                     /
+/ Some of the translation is sloppy around the rel=self link; these   /
+/ might need an exception in the translation, or we just don't do     /
+/ link-format any more anyway dynlink eventually gets there...        /
+/                                                                     /
+/ [1]: https://github.com/core-wg/dynlink/issues/16                   /
+/                                                                     /
+/ This could both be POSTed to the binding site, and identically be   /
+/ reported back. (Although the report back could contain additional   /
+/ information like "where would you find errors if any occurred").    /
+
+[
+  [2, 6(51 / rel:binding-source /), cri'coap://a/thermometer'],
+  [2, 6(51 / rel:binding-target /), cri'coap://b/temeprature-input'],
+  / If constant-relation objects like if and rt values are allowed single       /
+  / packingpoints together with their predicates, these could simply be a       /
+  / single tag each. /
+  [2, 6(54 / core:dynlink.bind-source /), 6(58 / observe /)],
+  [2, 6(55 / core:dynlink.bind-dest /), 6(59 / push /)],
+  [2, 6(55 / core:dynlink.refresh-time /), 30]
+]

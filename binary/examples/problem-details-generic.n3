@@ -1,0 +1,14 @@
+# This is what a processor that does not know the Python vocabulary would see
+# -- provided it can know that the Python dictionary pushes (10, 3, 0) items to
+# the packed stack, which a better replacement to packed-in-basic-packed might
+# afford easily.
+
+@prefix pd: <https://TBD-pd/> .
+@prefix core: <https://TBD-core/> .
+
+_:this pd:type _:unknown1 ;
+    _:unknown2 _:unknown3 ;
+    pd:detail "No module named 'link_header'" ;
+    _:unknown4 [
+        = </guru-meditation/0815> ;
+        core:ct 60 ] .
