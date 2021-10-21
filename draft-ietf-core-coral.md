@@ -198,21 +198,21 @@ and have the same set of properties.
 
 Triples are equivalent to each other if their subject, predicate and object are pair-wise equivalent.
 
-The *CoRAL structured information model* is a sequence of "passings" the basic model's edges,
+The *CoRAL structured information model* is a sequence of "passings" of the basic model's edges,
+starting at a node identifying the document (its retrieval context, typically URI from which it was obtained)
 where
 
 * each edge is passed at least one time in total,
 * each edge is passed at most one time after each passing that ends in its start point
-  (with the obvious exception that edges from the root node can be passed once from the start), and
+  (with the obvious exception that edges from the retrieval context can be passed once from the start), and
 * between a passing of an edge from A to B and a later passing from B to C,
   passings can only be along edges that can be reached from B along the graph,
   until B is the end of a different passing.
 
-The passings starts at the root node, usually defined as the URI from which the document is obtained.
 <!-- Terminology still to be enhanced, asking around at https://cs.stackexchange.com/questions/144008/terminology-for-multiply-visiting-walks-of-dags -->
 
 For better understanding,
-think of the structured information model as a sort of tree spanning from the root node,
+think of the structured information model as a sort of tree spanning from the retrieval context,
 with the oddity that when a node is reached along two different edges (which a normal tree doesn't do),
 it is up to the builder of the tree whether to describe anything children of the entered node
 on one parent or on the other parent,
@@ -231,10 +231,10 @@ to obtain a structured data set that expresses the same data set.
 
 In general, arbitrary basic data can not be expressed in a structured data set, because
 
-* There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
+* There may not be a tree that covers the directed graph, or the tree's root may not be the retrieval context.
 * There may be multiple edges into a blank node.
 
-In particular, the precise data from one structured information document can only be expressed with the same root node.
+In particular, the precise data from one structured information document can only be expressed with the same retrieval context.
 However, statements can be added to make a data set that is expressible elsewhere
 <!-- possibly shove around to make use of CURIEs introduced at some point -->
 (this document defines the `carries-information-about` relation type leading to the `http://www.iana.org/assignments/relation/carries-information-about` predicate being usable here),
@@ -1777,7 +1777,7 @@ as long as some basic restrictions are met:
 Each statement in RDF is mapped to a statement in CoRAL.
 Any IRI it contains in RDF is mapped to an equivalent CRI in CoRAL and vice versa.
 Any blank node of RDF is converted to a blank node (serialized as a null) in CoRAL.
-(Beware that depending on the context established in {{docsemantics}}, the root node may be a URI or a blank node).
+(Beware that depending on the context established in {{docsemantics}}, the retrieval context may be a URI or a blank node).
 Literals are converted as follows:
 
 * CBOR text strings are coverted to RDF strig literals.
@@ -1941,8 +1941,8 @@ Some structure can be carried over from Link Format to the structured model:
 The sequences of links gets reused,
 and the set and sequence of attributes in a particular occurrence of a link get applied to the statement produced from the link
 (or all the statements, if the link has multiple link relations).
-Statements whose subject is not the root node
-are attached to the root node using the necessarily packed
+Statements whose subject is not the document itself
+are attached to the retrieval context using the necessarily packed
 `http://www.iana.org/assignments/relation/carries-information-about` property.
 Statements about URLs mentioned elsewhere in the document
 can be expressed there instead. <!-- generally once, but not stopping anybody... -->
