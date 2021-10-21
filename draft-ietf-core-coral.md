@@ -1777,7 +1777,7 @@ as long as some basic restrictions are met:
 Each statement in RDF is mapped to a statement in CoRAL.
 Any IRI it contains in RDF is mapped to an equivalent CRI in CoRAL and vice versa.
 Any blank node of RDF is converted to a blank node (serialized as a null) in CoRAL.
-(Beware that depending on the context established in {{docsemantics}}, the root node may be a URI or a blank node).
+(Beware that depending on the context established in {{docsemantics}}, the retrieval context may be a URI or a blank node).
 Literals are converted as follows:
 
 * CBOR text strings are coverted to RDF strig literals.
@@ -1941,8 +1941,8 @@ Some structure can be carried over from Link Format to the structured model:
 The sequences of links gets reused,
 and the set and sequence of attributes in a particular occurrence of a link get applied to the statement produced from the link
 (or all the statements, if the link has multiple link relations).
-Statements whose subject is not the root node
-are attached to the root node using the necessarily packed
+Statements whose subject is not the document itself
+are attached to the retrieval context using the necessarily packed
 `http://www.iana.org/assignments/relation/carries-information-about` property.
 Statements about URLs mentioned elsewhere in the document
 can be expressed there instead. <!-- generally once, but not stopping anybody... -->
