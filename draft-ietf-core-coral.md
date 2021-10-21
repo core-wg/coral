@@ -468,6 +468,8 @@ precedence over the document's base URI.
 
 ## Links
 
+\[ TBD move information model in here \]
+
 A *link* describes a relationship between two resources on the
 Web.
 As in {{RFC8288}}, a link in CoRAL has
@@ -725,8 +727,6 @@ format.
 
 A document in the binary format is encoded in [Concise Binary Object
 Representation (CBOR)](#RFC8949).
-The encoding MUST satisfy the Core Deterministic Encoding Requirements
-specified in {{Section 4.2.1 of RFC8949}}.
 
 The CBOR structure of a document is presented in the [Concise Data
 Definition Language (CDDL)](#RFC8610).
