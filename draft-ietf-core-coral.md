@@ -1963,6 +1963,17 @@ unregistered values would stay `[2, 6(/ attr:rt /), value]` or maybe `254([value
 # Change Log
 {:removeinrfc}
 
+Changes from -03 to -04:
+
+* Formalize information model, as basic and structured model.
+* Remove textual representation, using CBOR diagnostig notation instead.
+* Use Packed CBOR instead of custom dictionaries.
+* Give explicit conversions from Link Format and with RDF.
+* Remove requirement for deterministic encoding.
+* Many editorial changes.
+* Update references.
+* Change of authorship.
+
 Changes from -02 to -03:
 
 * Changed the binary format to express relation types, operation types and
