@@ -174,16 +174,28 @@ future application states.
 The *basic CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:
 Data is expressed as an (unordered) set of triples (also called statements),
 consisting of a subject, a predicate and an object.
-The predicate is always a URI, and subject and object are each either a URI, or a concrete CBOR object (a literal).
+The predicate is always a URI,
+the subject is a URI or a blank node,
+and the object is either a URI, a blank node or a litreal.
 All URIs here are limited to the syntax-based normalized form of {{RFC3986}} Section 6.2.2.
+
+Blank nodes are unnamed entities.
+Literals are non-null CBOR objects that may have a set of properties (e.g. a language tag) attached to them;
+properties have a (not necessarily unique) URI as their name
+and a URI or literal as their value.
+<!-- Do we need this? -->
 
 These triples form a directed multigraph with the subject and object being source and destination, and the predicate a description <!-- not "label", because that implies uniqueness of the labels in Wikipedia definition --> on the edge.
 That graph is equivalent to the data.
 
 To form a set and a graph, we define an equivalence relation:
 URIs are only equal to URIs and if they are identical byte-wise.
-Literals carry an identity from their serialization format (think of it as the file and cursor position from which it was read -- but if cbor-packed is involved it's more like the stack of cursors at parsing time),
-and are only equivalent to themselves.
+A blank node is only equal to itself.
+A literal is equal to a different literal if
+its value is equal to another literal's value in the CBOR generic data model,
+and have the same set of properties.
+<!-- This is a recursive definition. -->
+
 Triples are equivalent to each other if their subject, predicate and object are pair-wise equivalent.
 
 The *CoRAL structured information model* is a sequence of "passings" the basic model's edges,
@@ -196,7 +208,7 @@ where
   passings can only be along edges that can be reached from B along the graph,
   until B is the end of a different passing.
 
-The passings starts at the root node, defined as the URI from which the document is obtained.
+The passings starts at the root node, usually defined as the URI from which the document is obtained.
 <!-- Terminology still to be enhanced, asking around at https://cs.stackexchange.com/questions/144008/terminology-for-multiply-visiting-walks-of-dags -->
 
 For better understanding,
@@ -220,16 +232,19 @@ to obtain a structured data set that expresses the same data set.
 In general, arbitrary basic data can not be expressed in a structured data set, because
 
 * There may not be a tree that covers the directed graph, or the tree's root may not be the URI from which the document is obtained.
-* There may be multiple edges into a literal, and the serialization can not build a file where these are expressed at the same spot (which the current serialization can not do at all).
+* There may be multiple edges into a blank node.
 
-In particular, the precise data from one structured information document can only be expressed at the same URI.
+In particular, the precise data from one structured information document can only be expressed with the same root node.
 However, statements can be added to make a data set that is expressible elsewhere
 <!-- possibly shove around to make use of CURIEs introduced at some point -->
 (this document defines the `carries-information-about` relation type leading to the `http://www.iana.org/assignments/relation/carries-information-about` predicate being usable here),
 and subsets of the data can be taken and expressed.
 
-Null literals are not special compared to other literals -- they just happen to work like RDF blank nodes,
-and are also called blank nodes.
+Literals with properties behave similar to blank nodes
+(where their properties resemble statements from a blank node) --
+so similar that they are serialized precisely like that.
+The difference is that properties are part of the literal's identity.
+The structured model does not add structure to properties.
 
 Forms are not special in the information model, but are merely statements around a blank node.
 They can be special in serialization formats (which have more efficient notations for them),
@@ -257,22 +272,6 @@ Some of these may be profiled, some not.
 ### Possible variations
 
 * Each URI is tagged with whether it is intended to be dereferenced or used as an identifier. <!-- from CB: think about alternative universe in which links and identifiers can be separated...? -->
-* Equivalence of literals over CBOR packing could be revisited; literals could gain an identity from all their outgoing trees being identical. (But that'd need an exception for Null literals). It might help to explicitly limit these sub-trees.
-* Alternatively, literals in the model could be replaced with this, and be disallowed in the subject position:
-
-  Literals can have properties in addition to their literal (CBOR) value.
-  These properties are expressed in key-value pairs very similar to statements about the literal
-  in that the keys are URIs, the values URIs or literals,
-  and keys can occur multiple times.
-  (In serializations like {{binary}}, they are expressed exactly the same).
-  However, unlike statements, these properties of the literal and
-  (transitively) part of the literal's identity,
-  and are always expressed completely in the structured information model.
-
-  If this model is adopted,
-  literals obtain their identity from being identical in value and all properties in an unordered comparison.
-  `null` values need to be excluded from literals,
-  as they need to retain the instance-of-their-own semantics.
 
 ### Examples
 
@@ -339,7 +338,7 @@ Note that the "temperature-c" interface and "sensor" resource type get code poin
 
 #### Literal example {#literalexample}
 
-To illustrate the handling options for literals, a link example of {{RFC8288}} is converted.
+To illustrate properties of literals, a link example of {{RFC8288}} is converted.
 
 (Note that even the conversion scheme hinted at above for {{RFC6690}} link format makes no claims at being applicable to general purpose web links like the below;
 this is merely done to demonstrate how literals can be handled.
@@ -353,25 +352,15 @@ whereas convertible <!-- a term that'll need more explaining when it's later def
 ~~~
 {: #fig-8288-orig title='Original link about a book chapter from RFC8288'}
 
-In the currently described model,
-the extracted data would be:
-
-| Subject | Predicate | Object |
-|---------+-----------+--------+
-| http://.../ | rel:previous | http://.../TheBook/chapter2 |
-| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" instance 44 |
-| "letztes Kapitel" instance 44 | xml:lang | "de" |
-{: #fig-8288-data-now title='Information model extracted using the current "all literals are unique" model'}
-
-If the alternative literals-with-properties approach were chosen, the extraction would produce:
+The model this would be converted to is:
 
 | Subject | Predicate | Object |
 |---------+-----------+--------+
 | http://.../ | rel:previous | http://.../TheBook/chapter2 |
 | http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with xml:lang "de" |
-{: #fig-8288-data-properties title='Information model extracted using the current "all literals are unique" model'}
+{: #fig-8288-data-properties title='Information model extracted from {{fig-8288-orig}}'}
 
-In CBOR serialization, both would produce the same output:
+In CBOR serialization, this produces:
 
 ~~~
 [
