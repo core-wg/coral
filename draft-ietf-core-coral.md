@@ -121,7 +121,7 @@ normative:
 
 
 The Constrained RESTful Application Language (CoRAL) defines a data
-model and interaction model as well as two specialized serialization
+model and interaction model as well as a compact serialization
 formats for the description of typed connections between resources on
 the Web ("links"), possible operations on such resources ("forms"), and
 simple resource metadata.
@@ -149,25 +149,9 @@ such as the [Hypertext Transfer Protocol (HTTP)](#RFC7230) or the
 [Constrained Application Protocol (CoAP)](#RFC7252).
 
 This document defines the CoRAL data model and interaction model as well
-as two specialized CoRAL serialization formats.
+as a compatct serialization format.
 
 ## Data and Interaction Model
-
-<!--
-
-The data model derives from the Web Linking model of {{RFC8288}} and
-consists primarily of two elements: "links" that describe the
-relationship between two resources and the type of that relationship;
-and "forms" that describe a possible operation on a resource and the
-type of that operation.
-
-The data model can additionally make simple statements about resources
-in a way similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225).
-In contrast to RDF, however, the focus of CoRAL is not on the
-description of a graph of resources, but on the discovery of possible
-future application states.
-
--->
 
 ### Definitions
 
@@ -221,6 +205,10 @@ or to describe some children at the first and others at a later occasion.
 <!-- also the sequences can even be different, which is something at least the serialization supports;
 maybe we may want to put a stop to the madness there and impose order,
 or someone comes up with a reason why we actually want that. -->
+
+Exceeding the RDF-like model,
+this represents CoRAL's focus on the discovery of possivble future application states
+over the description of a graph of resources.
 
 ### Observations
 
@@ -381,7 +369,7 @@ navigating between resources following links and performing operations
 on resources submitting forms.
 
 
-## Serialization Formats
+## Serialization Format
 
 The primary serialization format is a compact, binary encoding of
 links and forms in [Concise Binary Object Representation (CBOR)](#RFC8949).
@@ -390,9 +378,8 @@ memory, and processing resources](#RFC7228) and
 shares many similarities with the message format of CoAP:
 In place of verbose strings, small numeric identifiers are used to encode
 link relation types and operation types. [Uniform Resource Identifiers (URIs)](#RFC3986) are
-pre-parsed into (what CoAP considers to be) their components, which
-considerably simplifies URI processing for constrained nodes that
-already have a CoAP implementation.
+expressed as [Constrained Resource Identifier (CRI) references](#I-D.ietf-core-href)
+and thus pre-parsed for easy use with CoAP.
 As a result, link serializations in CoRAL are often much more compact
 and easier to process than equivalent serializations in [CoRE Link
 Format](#RFC6690).
@@ -635,9 +622,6 @@ browsing context and proceeds as follows:
 
 4. The agent obtains the *request URI* from the link target or
    submission target.
-   Link targets and submission targets can be denoted by relative URI
-   references, which need to be resolved against a base URI to obtain
-   the request URI.
    Fragment identifiers are not part of the request URI and MUST be
    separated from the rest of the URI prior to the next step.
 
@@ -646,8 +630,6 @@ browsing context and proceeds as follows:
    GET.
    If the agent is submitting a form, then the request method MUST be
    the one supplied by the form.
-   An IRI may need to be converted to a URI (see {{Section 3.1 of
-   RFC3987}}) for protocols that do not support IRIs.
 
    The agent SHOULD set HTTP header fields and CoAP request options
    according to the metadata (e.g., set the HTTP Accept header field
@@ -1179,8 +1161,6 @@ least to be interoperable.
 
 Applications may also mandate the following and other restrictions:
 
-* Use of only either the binary format or the text format.
-
 * Use of only either HTTP or CoAP as the supported Web transfer
   protocol.
 
@@ -1231,7 +1211,7 @@ creation of new IRIs without the risk of collisions.
 However, IRIs can be relatively verbose and impose a high overhead on
 a representation.
 This can be a problem in [constrained environments](#RFC7228).
-Therefore, CoRAL alternatively allows the use of unsigned integers to
+Therefore, CoRAL alternatively allows the use of packed entities to
 reference CBOR data items from a dictionary, as specified in
 {{dictionary-compression}}.
 These impose a much smaller overhead but instead need to be assigned
@@ -1345,8 +1325,6 @@ not the same as the integer 0).
 CoRAL makes extensive use of resource identifiers.
 See {{Section 7 of RFC3986}} for security considerations relating to
 URIs.
-See {{Section 8 of RFC3987}} for security considerations relating to
-IRIs.
 See {{Section 7 of I-D.ietf-core-href}} for security considerations
 relating to CRIs.
 
@@ -1480,34 +1458,12 @@ of {{RFC7252}}.
   {:compact}
 
 
-\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD3 and
-TBD4 in this document with the code points assigned by IANA.]]
+\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD3
+in this document with the code points assigned by IANA.]]
 
 \[\[NOTE TO IMPLEMENTERS: Experimental implementations may use content
-format ID 65087 for `application/coral+cbor` and content format ID
-65343 for `text/coral` until IANA has assigned code points.]]
-
-
-## CBOR Tag
-
-This document registers a CBOR tag for dictionary references according
-to the procedures of {{RFC8949}}.
-
-* Tag:
-  : TBD6
-
-  Data Item:
-  : unsigned integer
-
-  Semantics:
-  : Dictionary reference
-
-  Reference:
-  : [I-D.ietf-core-coral]
-  {:compact}
-
-\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD6 in this
-document with the code point assigned by IANA.]]
+format ID 65087 for `application/coral+cbor`
+until IANA has assigned code points.]]
 
 
 --- back
@@ -1743,8 +1699,6 @@ i.e., this document does not claim equivalence of (say) a given RDF its converte
 but applications can choose use these conversions if the limitations described with the conversion are acceptable to them.
 
 ## RDF
-
-\[ This section is assuming the property model of literals. \]
 
 \[ TBD: Expand / introduce the common CURIEs used here. \]
 
