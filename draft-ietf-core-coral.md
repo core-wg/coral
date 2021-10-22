@@ -1182,22 +1182,16 @@ of the person or party defining it, or be delegated to them.
 
 To avoid interoperability problems, it is RECOMMENDED that only URIs
 are minted that are normalized according to {{Section 6.2 of RFC3986}}.
-Non-normalized forms that are best avoided include:
+This is easily achieved when the URIs are defined in CRI form
+(in which they also become part of the dictionary),
+as this avoids many common non-normalized forms of URIs by construction.
+
+Non-normalized forms that are still to be avoided include:
 
 * Uppercase characters in scheme names and domain names
 
-* Percent-encoding of characters where it is not required by the URI syntax
-
 * Explicitly stated HTTP default port (e.g., \<http://example.com/> is
   preferable over \<http://example.com:80/>)
-
-* Completely empty path in HTTP URIs (e.g., \<http://example.com/> is
-  preferable over \<http://example.com>)
-
-* Dot segments (`/./` or `/../`) in the path component of a URI
-
-* Lowercase hexadecimal letters within percent-encoding triplets
-  (e.g., `%3F` is preferable over `%3f`)
 
 * Punycode-encoding of Internationalized Domain Names in URIs
 
