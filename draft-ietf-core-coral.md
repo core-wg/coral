@@ -1204,7 +1204,7 @@ creation of new URIs without the risk of collisions.
 However, URIs can be relatively verbose and impose a high overhead on
 a representation.
 This can be a problem in [constrained environments](#RFC7228).
-Therefore, CoRAL alternatively allows the use of packed refrences
+Therefore, CoRAL alternatively allows the use of packed references
 that abbreviate CBOR data items from a dictionary, as specified in
 {{dictionary-compression}}.
 These impose a much smaller overhead but instead need to be assigned
