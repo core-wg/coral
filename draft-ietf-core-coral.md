@@ -345,7 +345,7 @@ The model this would be converted to is:
 |---------+-----------+--------+
 | http://.../ | rel:previous | http://.../TheBook/chapter2 |
 | http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with xml:lang "de" |
-{: #fig-8288-data-properties title='Information model extracted from {{fig-8288-orig}}'}
+{: #fig-8288-data-properties title='Information model extracted from above'}
 
 In CBOR serialization, this produces:
 
