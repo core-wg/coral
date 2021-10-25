@@ -98,7 +98,6 @@ normative:
   RFC3339:
   RFC3629:
   RFC3986:
-  RFC3987:
   RFC4648:
   RFC5234:
   RFC5646:
@@ -121,7 +120,7 @@ normative:
 
 
 The Constrained RESTful Application Language (CoRAL) defines a data
-model and interaction model as well as two specialized serialization
+model and interaction model as well as a compact serialization
 formats for the description of typed connections between resources on
 the Web ("links"), possible operations on such resources ("forms"), and
 simple resource metadata.
@@ -149,25 +148,9 @@ such as the [Hypertext Transfer Protocol (HTTP)](#RFC7230) or the
 [Constrained Application Protocol (CoAP)](#RFC7252).
 
 This document defines the CoRAL data model and interaction model as well
-as two specialized CoRAL serialization formats.
+as a compatct serialization format.
 
 ## Data and Interaction Model
-
-<!--
-
-The data model derives from the Web Linking model of {{RFC8288}} and
-consists primarily of two elements: "links" that describe the
-relationship between two resources and the type of that relationship;
-and "forms" that describe a possible operation on a resource and the
-type of that operation.
-
-The data model can additionally make simple statements about resources
-in a way similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225).
-In contrast to RDF, however, the focus of CoRAL is not on the
-description of a graph of resources, but on the discovery of possible
-future application states.
-
--->
 
 ### Definitions
 
@@ -221,6 +204,10 @@ or to describe some children at the first and others at a later occasion.
 <!-- also the sequences can even be different, which is something at least the serialization supports;
 maybe we may want to put a stop to the madness there and impose order,
 or someone comes up with a reason why we actually want that. -->
+
+Exceeding the RDF-like model,
+this represents CoRAL's focus on the discovery of possivble future application states
+over the description of a graph of resources.
 
 ### Observations
 
@@ -381,7 +368,7 @@ navigating between resources following links and performing operations
 on resources submitting forms.
 
 
-## Serialization Formats
+## Serialization Format
 
 The primary serialization format is a compact, binary encoding of
 links and forms in [Concise Binary Object Representation (CBOR)](#RFC8949).
@@ -390,9 +377,8 @@ memory, and processing resources](#RFC7228) and
 shares many similarities with the message format of CoAP:
 In place of verbose strings, small numeric identifiers are used to encode
 link relation types and operation types. [Uniform Resource Identifiers (URIs)](#RFC3986) are
-pre-parsed into (what CoAP considers to be) their components, which
-considerably simplifies URI processing for constrained nodes that
-already have a CoAP implementation.
+expressed as [Constrained Resource Identifier (CRI) references](#I-D.ietf-core-href)
+and thus pre-parsed for easy use with CoAP.
 As a result, link serializations in CoRAL are often much more compact
 and easier to process than equivalent serializations in [CoRE Link
 Format](#RFC6690).
@@ -478,18 +464,18 @@ target of another.
 A link relation type identifies the semantics of a link.
 In HTML and in {{RFC8288}}, link relation types are typically denoted by an
 IANA-registered name, such as `stylesheet` or `type`. In CoRAL, all
-link relation types are, in contrast, denoted by an [Internationalized
-Resource Identifier (IRI)](#RFC3987),
+link relation types are, in contrast, denoted by a [Universal
+Resource Identifier (URI)](#RFC3986),
 such as \<http://www.iana.org/assignments/relation/stylesheet> or
 \<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>.
 This allows for the decentralized creation of new link relation types
 without the risk of collisions when they come from different
 organizations or domains of knowledge.
-IRIs can also lead to documentation, schema, and other information
+URIs can also lead to documentation, schema, and other information
 about a link relation type.
-In CoRAL documents, these IRIs are only used as identity tokens,
+In CoRAL documents, these URIs are only used as identity tokens,
 though, and are compared with Simple String Comparison as specified in
-{{Section 5.3.1 of RFC3987}}.
+{{Section 6.2.1 of RFC3986}}.
 
 Link contexts and link targets can both be either a URI, a literal
 value, or an anonymous resource.
@@ -541,7 +527,7 @@ Additionally, a form may be accompanied by a list of zero or more
   further described by form fields.
 
 An operation type identifies the semantics of the operation.
-Operation types are denoted (like link relation types) by an IRI.
+Operation types are denoted (like link relation types) by a URI.
 
 Form contexts and submission targets are both denoted by a URI.
 The form context is the resource on which the operation is ultimately
@@ -580,7 +566,7 @@ elements that further describe the form field value.
 
 A form field type identifies the semantics of the form field.
 Form field types are denoted (like link relation types and operation
-types) by an IRI.
+types) by a URI.
 
 Form field values can be either
 a URI,
@@ -635,9 +621,6 @@ browsing context and proceeds as follows:
 
 4. The agent obtains the *request URI* from the link target or
    submission target.
-   Link targets and submission targets can be denoted by relative URI
-   references, which need to be resolved against a base URI to obtain
-   the request URI.
    Fragment identifiers are not part of the request URI and MUST be
    separated from the rest of the URI prior to the next step.
 
@@ -646,8 +629,6 @@ browsing context and proceeds as follows:
    GET.
    If the agent is submitting a form, then the request method MUST be
    the one supplied by the form.
-   An IRI may need to be converted to a URI (see {{Section 3.1 of
-   RFC3987}}) for protocols that do not support IRIs.
 
    The agent SHOULD set HTTP header fields and CoAP request options
    according to the metadata (e.g., set the HTTP Accept header field
@@ -798,16 +779,16 @@ CRI-Reference = <Defined in Section XX of RFC XXXX>
 The directive is processed by resolving the CRI reference against
 the current context and assigning the result to the current base.
 
-### IRIs
+### URIs
 
-IRIs in links and forms are encoded as CRI references.
+URIs in links and forms are encoded as CRI references.
 
 >
 ~~~~ cddl
-IRI = CRI-Reference
+URI = CRI-Reference
 ~~~~
 
-A CRI reference is processed by resolving it to an IRI as specified
+A CRI reference is processed by resolving it to a URI as specified
 in {{Section 5.2 of I-D.ietf-core-href}} using the current base.
 
 
@@ -822,25 +803,25 @@ of zero or more nested elements.
 link = [2, relation-type, link-target, ?[*element]]
 ~~~~
 
-The link relation type is an IRI.
+The link relation type is a URI.
 
 >
 ~~~~ cddl
-relation-type = IRI
+relation-type = URI
 ~~~~
 
-The link target is either an IRI, a literal value, or null.
+The link target is either a URI, a literal value, or null.
 
 >
 ~~~~ cddl
-link-target = IRI / literal / null
+link-target = URI / literal / null
 literal = bool / int / float / time / bytes / text
 ~~~~
 
 The nested elements, if any, MUST be processed in a fresh environment.
 The current context is set to the link target of the enclosing link.
 The current base is initially set to the link target, if the link
-target is an IRI; otherwise, it is set to the current base of the
+target is a URI; otherwise, it is set to the current base of the
 current environment.
 
 ### Forms
@@ -854,18 +835,18 @@ array of zero or more form fields.
 form = [3, operation-type, submission-target, ?[*form-field]]
 ~~~~
 
-The operation type is an IRI.
+The operation type is a URI.
 
 >
 ~~~~ cddl
-operation-type = IRI
+operation-type = URI
 ~~~~
 
-The submission target is an IRI.
+The submission target is a URI.
 
 >
 ~~~~ cddl
-submission-target = IRI
+submission-target = URI
 ~~~~
 
 The request method is either implied by the operation type or
@@ -892,25 +873,25 @@ more nested elements.
 form-field = (form-field-type, form-field-value, ?[*element])
 ~~~~
 
-The form field type is an IRI.
+The form field type is a URI.
 
 >
 ~~~~ cddl
-form-field-type = IRI
+form-field-type = URI
 ~~~~
 
-The form field value is either an IRI, a literal value, or null.
+The form field value is either a URI, a literal value, or null.
 
 >
 ~~~~ cddl
-form-field-value = IRI / literal / null
+form-field-value = URI / literal / null
 ~~~~
 
 The nested elements, if any, MUST be processed in a fresh environment.
 The current context is set to the form field value of the enclosing
 form field.
 The current base is initially set to the form field value, if the form
-field value is an IRI; otherwise, it is set to the current base of the
+field value is a URI; otherwise, it is set to the current base of the
 current environment.
 
 ## Dictionary Compression {#dictionary-compression}
@@ -1111,7 +1092,7 @@ CoRAL-based applications naturally implement the [Web architecture](#W3C.REC-web
 centered around orthogonal specifications for identification,
 interaction, and representation:
 
-* Resources are identified by IRIs or represented by literal values.
+* Resources are identified by URIs or represented by literal values.
 
 * Interactions are based on the hypermedia interaction model of the
   Web and the methods provided by the Web transfer protocol.
@@ -1179,8 +1160,6 @@ least to be interoperable.
 
 Applications may also mandate the following and other restrictions:
 
-* Use of only either the binary format or the text format.
-
 * Use of only either HTTP or CoAP as the supported Web transfer
   protocol.
 
@@ -1194,44 +1173,38 @@ Applications may also mandate the following and other restrictions:
 ## Minting Vocabulary
 
 New link relation types, operation types, and form field types can be
-minted by defining an IRI that uniquely
+minted by defining a URI that uniquely
 identifies the item.
-Although the IRI may point to a resource that contains a definition of
+Although the URI may point to a resource that contains a definition of
 the semantics, clients SHOULD NOT automatically access that resource
-to avoid overburdening its server. The IRI SHOULD be under the control
+to avoid overburdening its server. The URI SHOULD be under the control
 of the person or party defining it, or be delegated to them.
 
-To avoid interoperability problems, it is RECOMMENDED that only IRIs
-are minted that are normalized according to {{Section 5.3 of RFC3987}}.
-Non-normalized forms that are best avoided include:
+To avoid interoperability problems, it is RECOMMENDED that only URIs
+are minted that are normalized according to {{Section 6.2 of RFC3986}}.
+This is easily achieved when the URIs are defined in CRI form
+(in which they also become part of the dictionary),
+as this avoids many common non-normalized forms of URIs by construction.
+
+Non-normalized forms that are still to be avoided include:
 
 * Uppercase characters in scheme names and domain names
-
-* Percent-encoding of characters where it is not required by the IRI syntax
 
 * Explicitly stated HTTP default port (e.g., \<http://example.com/> is
   preferable over \<http://example.com:80/>)
 
-* Completely empty path in HTTP IRIs (e.g., \<http://example.com/> is
-  preferable over \<http://example.com>)
+* Punycode-encoding of Internationalized Domain Names in URIs
 
-* Dot segments (`/./` or `/../`) in the path component of an IRI
+* URIs that are not in Unicode Normalization Form C
 
-* Lowercase hexadecimal letters within percent-encoding triplets
-  (e.g., `%3F` is preferable over `%3f`)
+URIs that identify vocabulary do not need to be registered. The
+inclusion of domain names in URIs allows for the decentralized
+creation of new URIs without the risk of collisions.
 
-* Punycode-encoding of Internationalized Domain Names in IRIs
-
-* IRIs that are not in Unicode Normalization Form C
-
-IRIs that identify vocabulary do not need to be registered. The
-inclusion of domain names in IRIs allows for the decentralized
-creation of new IRIs without the risk of collisions.
-
-However, IRIs can be relatively verbose and impose a high overhead on
+However, URIs can be relatively verbose and impose a high overhead on
 a representation.
 This can be a problem in [constrained environments](#RFC7228).
-Therefore, CoRAL alternatively allows the use of unsigned integers to
+Therefore, CoRAL alternatively allows the use of packed entities to
 reference CBOR data items from a dictionary, as specified in
 {{dictionary-compression}}.
 These impose a much smaller overhead but instead need to be assigned
@@ -1242,7 +1215,7 @@ by an authority to avoid collisions.
 Link relation types registered in the [Link Relations
 Registry](#LINK-RELATIONS), such as `collection` {{RFC6573}} or `icon`
 {{W3C.REC-html52-20171214}}, can be used in CoRAL by appending the
-registered name to the IRI
+registered name to the URI
 \<http://www.iana.org/assignments/relation/>:
 
 <ul empty="true"><li markdown="1">
@@ -1252,7 +1225,7 @@ registered name to the IRI
 </li></ul>
 
 The convention of appending the relation type name to the prefix
-\<http://www.iana.org/assignments/relation/> to form IRIs is adopted
+\<http://www.iana.org/assignments/relation/> to form URIs is adopted
 from the [Atom Syndication Format](#RFC4287); see also {{Section A.2 of
 RFC8288}}.
 
@@ -1345,8 +1318,6 @@ not the same as the integer 0).
 CoRAL makes extensive use of resource identifiers.
 See {{Section 7 of RFC3986}} for security considerations relating to
 URIs.
-See {{Section 8 of RFC3987}} for security considerations relating to
-IRIs.
 See {{Section 7 of I-D.ietf-core-href}} for security considerations
 relating to CRIs.
 
@@ -1357,7 +1328,7 @@ decisions, and the security of an application could be compromised if an
 entity providing a given string is connected to the wrong account or
 online resource based on different interpretations of the string.
 See {{RFC6943}} for security considerations relating to identifiers in
-IRIs and other strings.
+URIs and other strings.
 
 CoRAL is intended to be used in conjunction with a Web transfer protocol
 like HTTP or CoAP. See {{Section 9 of RFC7230}}, {{Section 9 of RFC7231}}, etc.,
@@ -1480,34 +1451,12 @@ of {{RFC7252}}.
   {:compact}
 
 
-\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD3 and
-TBD4 in this document with the code points assigned by IANA.]]
+\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD3
+in this document with the code points assigned by IANA.]]
 
 \[\[NOTE TO IMPLEMENTERS: Experimental implementations may use content
-format ID 65087 for `application/coral+cbor` and content format ID
-65343 for `text/coral` until IANA has assigned code points.]]
-
-
-## CBOR Tag
-
-This document registers a CBOR tag for dictionary references according
-to the procedures of {{RFC8949}}.
-
-* Tag:
-  : TBD6
-
-  Data Item:
-  : unsigned integer
-
-  Semantics:
-  : Dictionary reference
-
-  Reference:
-  : [I-D.ietf-core-coral]
-  {:compact}
-
-\[\[NOTE TO RFC EDITOR: Please replace all occurrences of TBD6 in this
-document with the code point assigned by IANA.]]
+format ID 65087 for `application/coral+cbor`
+until IANA has assigned code points.]]
 
 
 --- back
@@ -1743,8 +1692,6 @@ i.e., this document does not claim equivalence of (say) a given RDF its converte
 but applications can choose use these conversions if the limitations described with the conversion are acceptable to them.
 
 ## RDF
-
-\[ This section is assuming the property model of literals. \]
 
 \[ TBD: Expand / introduce the common CURIEs used here. \]
 
@@ -2010,7 +1957,7 @@ Changes from -00 to -01:
 The concept and original version of CoRAL (as well as CRIs) was developed by Klaus Hartke.
 It was heavily inspired by Mike Kelly's [JSON Hypertext Application Language](#HAL).
 
-The recommendations for minting IRIs have been adopted from [RDF 1.1
+The recommendations for minting URIs have been adopted from [RDF 1.1
 Concepts and Abstract Syntax](#W3C.REC-rdf11-concepts-20140225) to
 ease the interoperability between RDF predicates and link relation
 types.
