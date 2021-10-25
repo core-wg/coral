@@ -1916,6 +1916,7 @@ Changes from -03 to -04:
 * Remove textual representation, using CBOR diagnostig notation instead.
 * Use Packed CBOR instead of custom dictionaries.
 * Give explicit conversions from Link Format and with RDF.
+* Remove references to IRIs (outside RDF) as CRIs are closer to URIs.
 * Remove requirement for deterministic encoding.
 * Many editorial changes.
 * Update references.
