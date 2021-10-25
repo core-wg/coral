@@ -148,7 +148,7 @@ such as the [Hypertext Transfer Protocol (HTTP)](#RFC7230) or the
 [Constrained Application Protocol (CoAP)](#RFC7252).
 
 This document defines the CoRAL data model and interaction model as well
-as a compatct serialization format.
+as a compact serialization format.
 
 ## Data and Interaction Model
 
