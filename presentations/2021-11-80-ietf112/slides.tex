@@ -1,0 +1,124 @@
+\documentclass[aspectratio=169,colorlinks]{beamer}
+\usetheme{Boadilla} % plainest one with slide number footer
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{ulem}
+
+% about the presentation
+\title[CoRAL]{The Constrained RESTful Application Language (CoRAL)}
+\hypersetup{pdftitle={The Constrained RESTful Application Language (CoRAL)}}
+\subtitle{\texttt{draft-ietf-core-coral-04}}
+\author{\textit{Christian~Amsüss}, Thomas~Fossati}
+\date{2021-11-08, IETF 112}
+
+% used commands
+
+\usepackage{verbatim}
+
+\definecolor{darkgreen}{rgb}{0, 0.56, 0}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+
+\begin{document}
+
+\frame{\titlepage}
+
+% recap, as this hasn't been in a full meeting since IETF108
+\begin{frame}{CoRAL}\Large
+	A data model and language for talking about resources and interactions with them,
+	suitable for constrained devices
+\end{frame}
+
+\begin{frame}{Potential users}\Large
+	\begin{itemize}
+		\item \href{https://datatracker.ietf.org/doc/draft-ietf-core-problem-details/}{Problem details}
+		\item \href{https://datatracker.ietf.org/doc/draft-ietf-core-coap-pubsub/}{PubSub} topic descriptions
+		\item \href{https://datatracker.ietf.org/doc/draft-ietf-ace-oscore-gm-admin/}{OSCORE Group Manager administration}
+		\item \href{https://datatracker.ietf.org/wg/asdf/documents/}{SDF}
+		\item \ldots and anything that uses link-format (e.\,g. discovery)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{In contrast to \ldots, CoRAL is:}\Large
+	\begin{description}
+		\setlength\itemsep{1em}
+		\item[RDF] Compact (numeric pre-arranged or ad-hoc shorthands for predicates), parsable using CBOR, no URI processor required.
+
+		\item[RFC6690] Less string parsing, more depth to information, clear semantics.
+			% "No URI processor" could apply here too, but given the thigns done to URIs during 6690, it doesn't quite apply
+
+		\item[CBOR] Semantic keys over ad-hoc ones. High-level terminology for derived specs. Interaction model provided. Reuse of terminology.
+	\end{description}
+\end{frame}
+
+\begin{frame}{But CoRAL can be used with them:}\Large
+	\begin{description}
+		\setlength\itemsep{1em}
+		\item[RDF] can be round-tripped to unstructured CoRAL almost completely.
+
+		\item[RFC6690] can be round-tripped to CoRAL, provided the common CoRE attributes are used to describe the targets.
+
+		\item[CBOR]\hspace{-0.3em}'s literals can be used in CoRAL.
+	\end{description}
+\end{frame}
+
+\begin{frame}{Work areas}\large
+	\begin{description}
+		\item[90\%\footnote{Don't read too much into these numbers, they are for comparison between the items at best}]
+			Information model
+
+			Sea of triples, with optional structuring into a tree-like shape.
+
+		\item[70\%] Interaction model
+
+			User agent searches document, decides which link (or form) to follow.
+
+		\item[70\%] Dictionary setup
+
+			\href{https://datatracker.ietf.org/doc/draft-ietf-cbor-packed/}{Packed CBOR} now does the heavy lifting.
+			Variations being discussed: Per-document-format; ad-hoc (Basic Packed); importing named dictionary.
+
+			Document format can guide tree-like shape.
+
+		\item[30\%] Binary serialization
+
+			To be revisited with corpus of use case examples.
+
+		\item[?] Text serialization
+
+			Currently using binary serialization with \href{https://datatracker.ietf.org/doc/draft-bormann-cbor-edn-literals/}{EDN}
+			(or \href{https://en.wikipedia.org/wiki/Turtle_(syntax)}{Turtle} when details like the optional structuring or which parts are compressed do not matter).
+
+		\item[10\%] Queries, patches, provenance
+	\end{description}
+\end{frame}
+
+\begin{frame}{Next steps}\Large
+	\begin{itemize}
+		\item Coordinate with users to validate current state against their models.
+		\item Get corpus of examples for further dictionary and serialization work.
+		\item What needs to be in for an initial usable version?
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks}\Large
+	Comments?
+
+	\bigskip
+
+	Questions?
+
+	\vspace{2cm}
+
+	Design team for CoRAL and CRIs meets roughly every 2 weeks.
+\end{frame}
+
+\end{document}
