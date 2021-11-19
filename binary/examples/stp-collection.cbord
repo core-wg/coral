@@ -1,0 +1,16 @@
+/ What could STP (Series Transfer Pattern) look like in CoRAL?        /
+/                                                                     /
+/ This assumes a basic collection pattern, applied to a long list of  /
+/ very generic resources.                                             /
+
+[
+  [2, 6(23 / container:item /), cri'./1'],
+  [2, 6(23 / container:item /), cri'./2'],
+  [2, 6(23 / container:item /), cri'./3'],
+  [2, 6(23 / container:item /), cri'./4'],
+  [2, 6(23 / container:item /), cri'./5'],
+  [2, 6(23 / container:item /), cri'./6'],
+  [2, 6(23 / container:item /), cri'./7'],
+  [2, 6(23 / container:item /), cri'./8'],
+  [2, 6(42 / stp:next /), cri'stp-collection-after8.cbord']
+]

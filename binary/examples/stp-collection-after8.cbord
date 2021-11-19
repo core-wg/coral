@@ -1,0 +1,10 @@
+/ This is part of the stp-collection example /
+
+[
+  [2, 6(23 / container:item /), cri'./9'],
+  [2, 6(23 / container:item /), cri'./10'],
+  [2, 6(23 / container:item /), cri'./11'],
+  [2, 6(23 / container:item /), cri'./12'],
+  [2, 6(23 / container:item /), cri'./13'],
+  [2, 6(42 / stp:next /), cri'stp-collection-after8.cbord']
+]
