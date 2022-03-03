@@ -163,10 +163,7 @@ and the object is either a URI, a blank node or a litreal.
 All URIs here are limited to the syntax-based normalized form of {{RFC3986}} Section 6.2.2.
 
 Blank nodes are unnamed entities.
-Literals are non-null CBOR objects that may have a set of properties (e.g. a language tag) attached to them;
-properties have a (not necessarily unique) URI as their name
-and a URI or literal as their value.
-<!-- Do we need this? -->
+Literals are CBOR objects.
 
 These triples form a directed multigraph with the subject and object being source and destination, and the predicate a description <!-- not "label", because that implies uniqueness of the labels in Wikipedia definition --> on the edge.
 That graph is equivalent to the data.
@@ -175,9 +172,7 @@ To form a set and a graph, we define an equivalence relation:
 URIs are only equal to URIs and if they are identical byte-wise.
 A blank node is only equal to itself.
 A literal is equal to a different literal if
-its value is equal to another literal's value in the CBOR generic data model,
-and have the same set of properties.
-<!-- This is a recursive definition. -->
+its value is equal to the other literal's value in the CBOR generic data model.
 
 Triples are equivalent to each other if their subject, predicate and object are pair-wise equivalent.
 
@@ -226,12 +221,6 @@ However, statements can be added to make a data set that is expressible elsewher
 <!-- possibly shove around to make use of CURIEs introduced at some point -->
 (this document defines the `carries-information-about` relation type leading to the `http://www.iana.org/assignments/relation/carries-information-about` predicate being usable here),
 and subsets of the data can be taken and expressed.
-
-Literals with properties behave similar to blank nodes
-(where their properties resemble statements from a blank node) --
-so similar that they are serialized precisely like that.
-The difference is that properties are part of the literal's identity.
-The structured model does not add structure to properties.
 
 Forms are not special in the information model, but are merely statements around a blank node.
 They can be special in serialization formats (which have more efficient notations for them),
