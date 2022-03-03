@@ -314,7 +314,7 @@ Note that the "temperature-c" interface and "sensor" resource type get code poin
 
 #### Literal example {#literalexample}
 
-To illustrate properties of literals, a link example of {{RFC8288}} is converted.
+To illustrate non-trivial literals, a link example of {{RFC8288}} is converted.
 
 (Note that even the conversion scheme hinted at above for {{RFC6690}} link format makes no claims at being applicable to general purpose web links like the below;
 this is merely done to demonstrate how literals can be handled.
@@ -333,7 +333,7 @@ The model this would be converted to is:
 | Subject | Predicate | Object |
 |---------+-----------+--------+
 | http://.../ | rel:previous | http://.../TheBook/chapter2 |
-| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with xml:lang "de" |
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" in language "de" |
 {: #fig-8288-data-properties title='Information model extracted from above'}
 
 In CBOR serialization, this produces:
@@ -341,9 +341,7 @@ In CBOR serialization, this produces:
 ~~~
 [
   [2, 6(...) / rel:previous /, cri"/TheBook/chapter2", [
-    [2, simple(15) / item 15 for linkformat:title /, "letztes Kapitel", [
-      [2, 6(...) / xml:lang /, "de"]
-    ]]
+    [2, simple(15) / item 15 for linkformat:title /, 38(["de", "letztes Kapitel"])]
   ]]
 ]
 ~~~
