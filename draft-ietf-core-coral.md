@@ -306,7 +306,7 @@ the use of the packing described with the conversion results in a binary CBOR fi
   ]]
 ]
 ~~~
-{: #fig-6690-serialzied title='Serialized CoRAL file in diagnostic notation.'}
+{: #fig-6690-serialized title='Serialized CoRAL file in diagnostic notation.'}
 
 \[ TBD: Numbers are made up \]
 
@@ -333,8 +333,8 @@ The model this would be converted to is:
 | Subject | Predicate | Object |
 |---------+-----------+--------+
 | http://.../ | rel:previous | http://.../TheBook/chapter2 |
-| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" in language "de" |
-{: #fig-8288-data-properties title='Information model extracted from above'}
+| http://.../TheBook/chapter2 | linkformat:title | "letztes Kapitel" with language tag "de" |
+{: #fig-8288-tagged-literals title='Information model extracted from above'}
 
 In CBOR serialization, this produces:
 
@@ -345,7 +345,7 @@ In CBOR serialization, this produces:
   ]]
 ]
 ~~~
-{: #fig-8288-serialzied title='Serialization of the RFC8288-based example'}
+{: #fig-8288-serialized title='Serialization of the RFC8288-based example'}
 
 ### Interaction model
 
@@ -1238,10 +1238,7 @@ For example, a CoRAL document could use the [FOAF vocabulary](#FOAF) to describe
 ## Expressing Natural Language Texts
 
 Text strings can be associated with a [Language Tag](#RFC5646) and a base text direction
-(right-to-left or left-to-right) by nesting links of types
-\<http://coreapps.org/base#language> and
-\<http://coreapps.org/base#direction>,
-respectively:
+(right-to-left or left-to-right) by using CBOR tag 38.
 
 <ul empty="true"><li markdown="1">
 ~~~~ coral
@@ -1249,8 +1246,9 @@ respectively:
 ~~~~
 </li></ul>
 
-The link relation types \<http://coreapps.org/base#language> and
-\<http://coreapps.org/base#direction> are defined in {{core-vocabulary}}.
+\[ Maturity note: Whether direction will actually be expressed in an updated tag 38,
+   how precisely that is done, or whether a new tag will be allocated for text with direction
+   is currently still under discussion. \]
 
 
 ## Embedding Representations in CoRAL
@@ -1468,25 +1466,9 @@ Link Relation Types:
 : Indicates that the link target is a human-readable label (e.g., a
   menu entry).
 
-  The link target MUST be a text string. The text string SHOULD be
-  annotated with a language and text direction using nested links of
-  type \<http://coreapps.org/base#language> and
-  \<http://coreapps.org/base#direction>, respectively.
-
-\<http://coreapps.org/base#language>
-: Indicates that the link target is a [Language Tag](#RFC5646) that
-  specifies the language of the link context.
-
-  The link target MUST be a text string in the format specified in
-  {{Section 2.1 of RFC5646}}.
-
-\<http://coreapps.org/base#direction>
-: Indicates that the link target is a base text direction
-  (right-to-left or left-to-right) that specifies the text
-  directionality of the link context.
-
-  The link target MUST be either the text string "rtl" or the text
-  string "ltr".
+  The link target MUST be a literal. The text string SHOULD be
+  wrapped in a tag indicating language and, if necessary, direction
+  if applicable.
 
 \<http://coreapps.org/base#representation>
 : Indicates that the link target is a representation of the link
@@ -1660,11 +1642,7 @@ This section defines a default dictionary that is assumed when the `application/
 |   6 | &lt;http://coreapps.org/base#search&gt;                     |
 |   7 | &lt;http://coreapps.org/coap#accept&gt;                     |
 |   8 | &lt;http://coreapps.org/coap#type&gt;                       |
-|   9 | &lt;http://coreapps.org/base#language&gt;                   |
 |  10 | &lt;http://coreapps.org/coap#method&gt;                     |
-|  11 | &lt;http://coreapps.org/base#direction&gt;                  |
-|  12 | "ltr"                                                       |
-|  13 | "rtl"                                                       |
 |  14 | &lt;http://coreapps.org/base#representation&gt;             |
 {: #default-dictionary-entries align="center" cols="r l"
 title="Default Dictionary" }
@@ -1696,9 +1674,8 @@ as long as some basic restrictions are met:
 * A blank node of CoRAL can only have one incoming edge in serialization.
   RDF documents with multiply connected blank nodes need to undergo skolemization before they can be expressed in CoRAL.
 
-* CoRAL supports arbitrary literal objects, including CBOR tags, and arbitrary properties.
+* CoRAL supports arbitrary literal objects, including CBOR tags.
   For each object that is used in a literal, a mapping to a datatype (typically XSD) needs to be defined.
-  Properties of CoRAL literals need to be limited to those properties expressible in RDF (datatype, language and/or internationalization).
 
   When literals are normalized in RDF according to XSD rules,
   or the literal mappings to RDF datatypes are ambiguous on the CoRAL side,
@@ -1714,14 +1691,7 @@ Any blank node of RDF is converted to a blank node (serialized as a null) in CoR
 (Beware that depending on the context established in {{docsemantics}}, the retrieval context may be a URI or a blank node).
 Literals are converted as follows:
 
-* CBOR text strings are coverted to RDF strig literals.
-
-  If they have a CRI-valued rdf:datatype property, the corresponding URI is set as the RDF literal's datatype.
-
-  If they have a string-valued xml:lang property, the corresponding URI is set as the RDF literal's language;
-  this is requires the datatype to be rdf:langString or absent.
-
-  If any other properties are present, the conversion fails.
+* CBOR text strings are coverted to RDF string literals without a language tag.
 
 * CBOR literals from the following list are converted to their corresponding text representations of the datatype from the following table:
 
@@ -1733,12 +1703,12 @@ Literals are converted as follows:
 | decfrac | xsd:decimal |
 | bytes | xsd:base64Binary or xsd:base64hexBinary (?) |
 | tdate | xsd:date |
+| #6.38([lang: tstr, text: tstr]) | rdf:langString with lang as language tag |
+| #6.TBD([lang: tstr, dir: tstr, text: tstr]) | i18n:{lang}_{dir} |
 {: #cddl-xsd-mappings title="Mapping between CDDL types and XSD datatypes" }
 
-  If a CBOR literal has a concrete rdf:datatype attached,
-  and \[ there is probably some XSD subtyping term we can use here \], that type is set as the datatype instead.
-
-\[ TBD: Check compatibilities, give type for at least the basic tags \]
+\[ TBD: Check compatibilities, give type for at least the basic tags.
+   Directional text might wind up in tag 38, \]
 
 * RDF literals are mapped to any CoRAL literal that yields an equivalent RDF literal in the opposite direction.
 
@@ -1846,7 +1816,7 @@ Available mechanisms are:
   The attribute value is stored as a text string literal.
   If the Link Format attribute is language tagged
   (i.e. when the attribute name ends with an asterisk and the value is of ext-value shape),
-  the literal gets the language set as an xml:lang property.
+  the literal is encapsulated in a CBOR language tag (38).
 * int:
   The target attribute is processed as an ASCII encoded number
   and expressed as an integer literal.
