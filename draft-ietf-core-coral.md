@@ -665,6 +665,20 @@ not have a fresh representation in its cache.
 An agent MUST NOT reissue an unsafe request (e.g., a PUT or
 POST) unless it actually intends to perform that operation again.
 
+## Designing interactions in an Open World
+
+CoRAL can be used to build both open world systems
+("if something is not said, it may or may not be true")
+and closed world systems ("if something is not said, it is not true").
+In constrained environments (and the web in general),
+partial representations are often used for efficiency.
+For example, a device can query another for particular statements
+using a yet to be defined FETCH version of CoRAL.
+
+It is expected that some tools
+(e.g., server or agent libraries)
+require that TBD
+To support such cases, it is convenient to build applications on open world assumptions.
 
 
 # Binary Format {#binary}
