@@ -1768,6 +1768,13 @@ can use this conversion.
 It defines terms for common properties used for discovering resources,
 and describes a way to compatibly extend the mapping.
 
+The same mechanism
+(but probably with a different mapping between names and attributes,
+and different rules about the necessity of packing entries)
+can be defined for any data model that builds on {{RFC8288}} semantics,
+e.g., the links sent in headers or payloads about {{?RFC7089}} mementos,
+or applications building on {{?I-D.ietf-httpapi-linkset}}.
+
 <!-- Better terminology than "necessarily" (in all-caps?) appreciated! -->
 In several points the mapping describes URIs to necessarily have an entry in the packing table;
 this refers to the profiling described further down.
