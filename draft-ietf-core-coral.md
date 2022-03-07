@@ -670,16 +670,30 @@ POST) unless it actually intends to perform that operation again.
 CoRAL can be used to build both open world systems
 ("if something is not said, it may or may not be true")
 and closed world systems ("if something is not said, it is not true").
+
 In constrained environments (and the web in general),
 partial representations are often used for efficiency.
 For example, a device can query another for particular statements
 using a yet to be defined FETCH version of CoRAL.
-
 It is expected that some tools
 (e.g., server or agent libraries)
-require that TBD
-To support such cases, it is convenient to build applications on open world assumptions.
+require the application to be tolerant of unprocessed statements.
+Furthermore, it can be easier to evolve applications
+and their packing dictionaries
+if loss of statements leads to graceful degradation.
 
+Therefore, it is convenient to build applications on open world assumptions.
+Such applications can only use statements that add possibilities,
+and none that limit interactions.
+Any limitations need to be encoded in statements the agent necesarily has to perform an action in the first place,
+and can then be relaxed in additional statements.
+
+For example, an application built with open-world assumptions
+can not create a form that allows feeding gremlins,
+and in an additional statement (e.g., a form field) forbid after midnight.
+Instead, the application needs to describe a limited-feeding form,
+which can only be used if any of the attached conditions is met;
+the condition "before midnight" can then be expressed in an additional statement.
 
 # Binary Format {#binary}
 
