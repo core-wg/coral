@@ -1892,6 +1892,13 @@ unregistered values would stay `[2, 6(/ attr:rt /), value]` or maybe `254([value
 # Change Log
 {:removeinrfc}
 
+Changes from -04 to -05:
+
+* Literals can no longer have properties.
+  The only use case was annotating languages and directions, and that can be done in CBOR.
+* Added section about open and close world modelling.
+* Information model merged with the previous data model and interaction section.
+
 Changes from -03 to -04:
 
 * Formalize information model, as basic and structured model.
