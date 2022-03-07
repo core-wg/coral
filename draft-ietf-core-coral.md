@@ -152,7 +152,61 @@ as a compact serialization format.
 
 ## Data and Interaction Model
 
-### Definitions
+The data model is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) model,
+with provisions to enable form based interaction
+and to express data from Web Linking ({{RFC8288}}) based models such as {{RFC6690}}'s Link Format.
+
+The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
+automated software agent can change the application state by
+navigating between resources following links and performing operations
+on resources submitting forms.
+
+## Notational Conventions
+
+{::boilerplate bcp14-tagged}
+
+Terms defined in this document appear in *cursive* where they
+are introduced (rendered in plain text as the new term surrounded by
+underscores).
+
+
+# Data and Interaction Model {#model}
+
+The Constrained RESTful Application Language (CoRAL) is designed for
+building [Web-based applications](#W3C.REC-webarch-20041215) in which
+automated software agents navigate between resources by following
+links and perform operations on resources by submitting forms.
+
+
+## Browsing Context
+
+Borrowing from [HTML 5](#W3C.REC-html52-20171214),
+each such agent maintains a *browsing context* in which the
+representations of Web resources are processed.
+(In HTML, the browsing context typically corresponds to a tab or
+window in a Web browser.)
+
+At any time, one representation in a browsing context is designated
+the *active* representation.
+
+
+## Documents
+
+A resource representation in one of the CoRAL serialization formats is
+called a CoRAL *document*.
+The URI that was used to retrieve such a document is called the
+document's *retrieval context*.
+This URI is also considered the base URI for relative URI references
+in the document.
+
+A CoRAL document consists of a list of zero or more statements
+that can express links or (in a composition of statements) forms.
+CoRAL serialization formats may contain additional elements
+for efficiency or convenience, such as an embedded base URI that takes
+precedence over the document's base URI,
+or to concisely represent compound statements (e.g., to express forms).
+
+## Data model
 
 The *basic CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:
 Data is expressed as an (unordered) set of triples (also called statements),
@@ -347,14 +401,6 @@ In CBOR serialization, this produces:
 ~~~
 {: #fig-8288-serialized title='Serialization of the RFC8288-based example'}
 
-### Interaction model
-
-The interaction model derives from the processing model of [HTML](#W3C.REC-html52-20171214) and specifies how an
-automated software agent can change the application state by
-navigating between resources following links and performing operations
-on resources submitting forms.
-
-
 ## Serialization Format
 
 The primary serialization format is a compact, binary encoding of
@@ -382,50 +428,6 @@ the RDF [Turtle](#W3C.REC-turtle-20140225) format
 can be used when only the basic information model content is to be conveyed.
 When used like this, the conversion according to the RDF appendix is implied.
 \]
-
-## Notational Conventions
-
-{::boilerplate bcp14-tagged}
-
-Terms defined in this document appear in *cursive* where they
-are introduced (rendered in plain text as the new term surrounded by
-underscores).
-
-
-# Data and Interaction Model {#model}
-
-The Constrained RESTful Application Language (CoRAL) is designed for
-building [Web-based applications](#W3C.REC-webarch-20041215) in which
-automated software agents navigate between resources by following
-links and perform operations on resources by submitting forms.
-
-
-## Browsing Context
-
-Borrowing from [HTML 5](#W3C.REC-html52-20171214),
-each such agent maintains a *browsing context* in which the
-representations of Web resources are processed.
-(In HTML, the browsing context typically corresponds to a tab or
-window in a Web browser.)
-
-At any time, one representation in a browsing context is designated
-the *active* representation.
-
-
-## Documents
-
-A resource representation in one of the CoRAL serialization formats is
-called a CoRAL *document*.
-The URI that was used to retrieve such a document is called the
-document's *retrieval context*.
-This URI is also considered the base URI for relative URI references
-in the document.
-
-A CoRAL document consists of a list of zero or more links and forms,
-collectively called *elements*.
-CoRAL serialization formats may define additional types of elements
-for efficiency or convenience, such as an embedded base URI that takes
-precedence over the document's base URI.
 
 
 ## Links
