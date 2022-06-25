@@ -1889,6 +1889,74 @@ packing attributes together with their URIs is considered:
 Rather than `[2, 6(/ attr:rt /), 6(/ rt:core.rd /)]` we could have `6(rt-core)` right away;
 unregistered values would stay `[2, 6(/ attr:rt /), value]` or maybe `254([value])` using prefix packing. \]
 
+# Dictionary setup by reference
+
+This section defines a CBOR tag for Packed CBOR table setup by reference to an identifier.
+This dictionary setup mechanism is independent of CoRAL
+(but it is expected that CoRAL will heavily use this setup mechanism).
+
+The Referenced-Packed-CBOR tag prepends (or "imports") items to the packing tables that are defined outside of the document.
+The number of entries that are prepended is explicitly given for each of the tables.
+\[ The tables "shared" and "argument" are currently used here, consistently with a WIP version of cbor-packed.
+In -05 there were three tables "shared", "prefix" and "suffix";
+this document will track whatever the Basic-Packed-CBOR has as its arguments before rump. \]
+
+```
+Referenced-Packed-CBOR = #6.TBD5151([reference: cri, shared-count: unsigned, argument-count: unsigned, rump: any])
+```
+
+The tag can be considered equivalent to tag TBD51 of {{I-D.ietf-cbor-packed}},
+where the dictionary described by the reference is trimmed to precisely shared-count / argument-count items.
+The equivalent tag 51 does not contain the reference, and contains the trimmed item lists in their respective positions before the rump.
+
+The reference is given in form of a CRI because that is the common form of universal identifiers used in the context of CoRAL.
+As with CoRAL predicates, consumers should not "follow their nose" and dereference the dictionary definition;
+\[ wherever the notes of the 2022-06-24 CoRAL meeting wind up \] has more concrete guidance on that topic.
+
+The number of imported items is included explicitly
+as that allows consumers that are not aware of that particular referenced dictionary to still maintain an accurate view of the table indices assigned to the entries they do know;
+they can, for example, present any references to the newly prepended table items as invalid data (tag 18446744073709551615).
+
+The explicit item counts also allow the dictionaries to evolve:
+They can be initially described with a small number of entries,
+and later expanded.
+This is completely forward compatible,
+and backward compatible to the extent that the consumer knows the old items
+and treats references into items it does not know invalid (just as it would do as if it were unaware of the referenced dictionary).
+
+Producers are encouraged to only import items up to the latest item they use.
+This helps keeping the table index numbers of pre-existing entries low
+and thus possibly in a smaller encoding range.
+
+TBD: IANA considerations
+
+## Trees of dictionaries
+
+A pattern enabled by tag TBD5151 are tree-shaped dictionary setups.
+
+In a tree-shaped dictionary, not all terms are included in the initial dictionary.
+Instead, the initial dictionary contains only the core terms.
+Additional terms are grouped into separate dictionaries.
+The groups should be chosen such that the CBOR being packed would typically use many items from one or a few groups.
+
+Each of these groups is assigned an identifier,
+for which a shared item is placed in the initial dictionary.
+Encoders can then choose to use tag TBD5151 on these shorthands to import the set of terms into their dictionary.
+
+\[
+As an alternative to placing `TBD5151(/ dict setup by reference/[6(x) / dict URI /, n1, n2, rump])` in documents,
+it might well be possible to define a dictionary entry with a suitable functor,
+such that the placed item can be `25x([n1, n2, rump])`.
+This is similar to how the packing of common predicate-object combinations in documents converted from CoRE Link Format,
+and depends on the functors that work with packed CBOR.
+This would allow picking a rather high tag for these, as it would practically not be serialized.
+\]
+
+Some of this could already be done by storing a tag TBD51 inside the tables defined by an application environment.
+Tag TBD5151 is better suited for tree-shaped dictionary setups because it explicitly provides the number of imported items to the consumer.
+Thus, the application environment does not need to allocate the indices and sizes of the nested dictionaries from the start,
+but can both add nested dictionaries and have them grow in a backward compatible manner as described above.
+
 # Change Log
 {:removeinrfc}
 
