@@ -1,0 +1,12 @@
+/ This is part of the stp-index example /
+
+[
+  / Actually, rather than just sending the embedded representation, could have sent the bare value just as well /
+  [2, 6(0 / coral:current-representation), 6.1668546672(
+    / 1668546560 + 112 for application/senml+cbor /
+    [
+      {-2 / bn /: "urn:dev:...", -4 / "bu" /: "Cel", -3 / "bt": 1234567890, 2 / "v" /: 39.1},
+      { / ... /}
+    ]
+  )]
+]

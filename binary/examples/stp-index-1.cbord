@@ -1,0 +1,13 @@
+/ This is part of the stp-index example /
+
+[
+  / Not indicating this is growing any more /
+  [2, 6(42 / stp:next /), cri'stp-index-0.cbord'],
+  [2, 6(0 / coral:current-representation), 6.1668546672(
+    / 1668546560 + 112 for application/senml+cbor /
+    [
+      {-2 / bn /: "urn:dev:...", -4 / "bu" /: "Cel", -3 / "bt": 1234571490, 2 / "v" /: 39.1},
+      { / ... /}
+    ]
+  )]
+]

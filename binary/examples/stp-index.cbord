@@ -1,0 +1,23 @@
+/ What could STP (Series Transfer Pattern) look like in CoRAL?        /
+/                                                                     /
+/ This assumes a series that is not expressed natively in CoRAL but   /
+/ by representations in another format (SenML). It pagination from a  /
+/ head, packs representations in together with the CoRAL, and also    /
+/ explores a form for random access.                                  /
+
+[
+  [2, 6(42 / stp:next /), cri'stp-index-2.cbord', [
+    / Being still observable means it's still growing. /
+    [2, 6(10 / core:obs /), true]
+  ]],
+  [2, 6(55 / stp:search /), null, [
+    / Form that describes how /
+    [2, 6(81 / form:target /), cri'cgi-bin/stp-index-search.php'],
+    [2, 6(82 / form:method /), 6(825 / FETCH /)],
+    [2, 6(83 / form:builder /), 6(559 / form:build-a-senml-fetch-out-of-what-you-are-looking-for /)],
+  ]],
+  / I seriously doubt anyone wants CRI templates, so this is in URI template /
+  / form. High data rate parallel fetchers might still want to use that      /
+  / information.                                                             /
+  [2, 6(56 / stp:all-are-of-this-form /), "stp-index-{linear}.cbord"]]
+  ]

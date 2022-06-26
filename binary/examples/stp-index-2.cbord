@@ -1,0 +1,16 @@
+/ This is part of the stp-index example /
+
+[
+  / Yes I'm still growing (independenlty of whether you just observe /
+  / me or not) /
+  [2, 6(10 / core:obs /), true],
+  [2, 6(42 / stp:next /), cri'stp-index-1.cbord'],
+  / Alternatively to an embedded representation, multipart would just be another option /
+  [2, 6(0 / coral:current-representation), 6.1668546672(
+    / 1668546560 + 112 for application/senml+cbor /
+    [
+      {-2 / bn /: "urn:dev:...", -4 / "bu" /: "Cel", -3 / "bt": 1234575090, 2 / "v" /: 39.1},
+      { / ... /}
+    ]
+  )]
+]
