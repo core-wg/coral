@@ -1,0 +1,179 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2021-09-23T01:13:13.723244+00:00",
+  "repo": "core-wg/coral",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "MDExOlB1bGxSZXF1ZXN0NzI3NzAwMjI1",
+      "title": "WIP: Formalize information model",
+      "url": "https://github.com/core-wg/coral/pull/1",
+      "state": "OPEN",
+      "author": "chrysn",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "State a formal information model, and distinguish between the sea-of-triple-ish and the ordered-and-treeified structured data.\r\n\r\nI'll need to do some more polishing, but this is the rough form of what I'd like to try the various applications out with.",
+      "createdAt": "2021-09-06T07:28:41Z",
+      "updatedAt": "2021-09-17T17:24:40Z",
+      "baseRepository": "core-wg/coral",
+      "baseRefName": "main",
+      "baseRefOid": "57826d1126843202fe2b5b5001e5d9e82ba67349",
+      "headRepository": "core-wg/coral",
+      "headRefName": "information-model",
+      "headRefOid": "ba73dc8c28c38e048ee868f0f0b839c96fb0b4d3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "chrysn",
+          "authorAssociation": "MEMBER",
+          "body": "Thanks for the comments, and even more for sending them quickly.\n\nOn Mon, Sep 06, 2021 at 01:56:36AM -0700, Thomas Fossati wrote:\n> +The predicate is always a URI in syntax normalized form, and subject and object are either a URI in syntax normalized form, or a concrete CBOR object (a literal).\n> \n> ```suggestion\n> The predicate is always a URI in normalized form, and subject and object are either a URI in normalized form, or a concrete CBOR object (a literal).\n> ```\n\nThere are several stages of normalization; what I'd like to highlight\nhere is that of the 4 steps on the comparison ladder (RFC3986 Section\n6.2), precisely this particular step should be taken.\n\nThis might easily be said better somewhere else, and hopefully CRIs will\nturn out in a way that they are always in syntax based form, and thus\nthe practical comparison is for identity.\n\n> > +Literals carry an identity from their serialization format (think of it as the file and cursor position from which it was read -- but if cbor-packed is involved it's more like the stack of cursors at parsing time),\n> +and are only equivalent to themselves.\n> \n> This para is a tad obscure.  Maybe what we want to say here that is\n> simply that _\"the value of a literal is its CBOR serialisation.\"_ ?\n\nIt is, but treating them by value is not. The canonocal example is two\nresources being labelled \"Gift\", but one is { \"Gift\" :lang :en } meaning\npresent, and one { \"Gift\" :lang :de } meaning \"present.\n\nIt definitely needs much better phrasing -- or do you think the\nmechanism should be different too?\n\n> > @@ -165,6 +167,60 @@ In contrast to RDF, however, the focus of CoRAL is not on the\n>  description of a graph of resources, but on the discovery of possible\n>  future application states.\n>  \n> +-->\n> +### Definitions\n> +\n> +The *CoRAL information model* is similar to the [Resource Description Framework (RDF)](#W3C.REC-rdf11-concepts-20140225) information model:\n> +Data is expressed as an (unordered) set of triples (also called statements),\n> +consisting of a subject, a predicate and an object.\n> +The predicate is always a URI in syntax normalized form, and subject and object are either a URI in syntax normalized form, or a concrete CBOR object (a literal).\n> +\n> +These triples form a directed graph with the subject and object being source and destination, and the predicate a description on the edge.\n> +That graph is equivalent to the data.\n> +\n> +To form a set and a graph, we define an equivalence relation:\n> \n> not sure what \"set\" are we talking about here?\n> is it the data set?  but if so, why do we need to form both a graph *and* a set: isn't the graph a synonym of dataset (as per L179)?\n\nWhat I meant writing this down is that if you have a bag of things and\nwant to turn them into a mathematical (should have stressed that) set,\nthere needs to be an equivalence relation that deduplicates items in the\nset. Same for the (mathematical) graph: items need identity to wind up\nas the identical node.\n\nI've written much of this in mental \"math mode\" (and it doesn't help\nthat all the courses I did on basic maths were in German, so there might\nbe translation errors too); in final ID form, this wil need different\nlanguage.\n\n> +The *CoRAL structured information model* is an ordered tree across the graph of the CoRAL information model, whose root is the URI from which the document is obtained, and which may span edges multiple times.\n> \n> is this really an \"ordered tree\" or an \"oriented tree\" would suffice?  If the former, we should also state what the ordering criterion used to sort the children nodes is.\n\nI've understood many practical concerns to necessitate a sequence on the\nitems -- if the application should try items in a sequence, that\nsequence needs to be part of the information model at some point.\n\nThere is no generic criterion, the ordering is just part of the\nadditional information that the structured model carries and the general\ndoes not; clarified \"structure (including the order)\" below.\n\n\"oriented\" is a word I missed, making it explicit (\"ordered oriented\ntree\").\n\n> s/across the graph/over the graph/\n\nYes, taken in.\n\n> Also, it's not clear why _\"[it] may span edges multiple times\"_\n\nIs this a question in \"why would you do that\" (belonging to the\nrationale) or \"what kind of tree allows that\" (which means that I may\nneed to pick a better word than the \"ordered oriented tree\" and have to\nresist the urge to hardcode it in even more unreadable set definitions)?\n\n(also see next comment).\n\n> +If a node has more than one parent, its children may be expressed on any non-empty set of its parents\n> \n> not sure I get what _\"to be expressed on\"_ means?\n\nThat's what you get from the odd tree above -- each time a node is\nentered, a different choice of picking a subtree can be made.\n\nThat's what we get from expressing the tree acr^Wover the graph as a\nCBOR tree that may visit a node multiple times. If, of course, we choose\nto take the serialization avenue where such things are forbidden (and a\nmultiply visited node must always come from the dictionary), then all\nthe worries of these multi-ish trees go away.\n\nI'm very open to exploring that, it's just that AFAIR we haven't been\nthere yet; all the proposals I remember on how to treat multiply visited\nnodes always had some optionality to using them.\n\n> +Arbitrary data can not be expressed in a structured data set, because\n> \n> ```suggestion\n> In general, arbitrary data can not be expressed in a structured data set, because\n> ```\n\nTaken in.\n\n> +* There may be multiple edges into a literal, and the serialization can not build a file where these are expresed at the same spot.\n> \n> not sure what \"at the same spot\" means?\n\nWhat I'm trying to say is that if the serialization somehow manages to\nuse the *identical* CBOR object again, it could easily manage to express\nthat.\n\nThe current serialization format can't do that (noted in the text for\nthe time being), but if (for example) we were to cherry-pick the web\nlinking feature of using multiple rel values in the same link, then a\nserializer could express a literal with multiple ingress edges, provided\nthey all come from the same node and the serializer groups them together\nso that in the end the CBOR object is only in the document once.\n\n> +In particular, the precise data from one structured information document can only be expressed at the same URI.\n> +However, statements can be added to make a data set that is expressible elsewhere,\n> +and subsets of the data can be taken and expressed.\n> \n> there is probably a better way to say _\"taken and expressed\"_ but I don't have any concrete suggestion.\n\nWe'll find one in time. (This is so WIP that I don't expect much of the\nline-by-line text to make it to an uploaded ID, trying to hammer out the\nconcepts first and slowly gathering phrases).\n\n> +Forms are not special in the information model, but are merely statements about a null node.\n> \n> not sure what is a _\"null node\"_?\n> Maybe s/null node/blank node/\n\nThat necessitated making \"blank node\" a term of CoRAL, but the change\nset in which I'm applying this contains such a change now.\n",
+          "createdAt": "2021-09-06T09:35:32Z",
+          "updatedAt": "2021-09-06T09:35:32Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Sorry for replying so late, I just realised this mega reply existed -- I don't know why I didn't receive an email notification from Github :-(\r\n\r\nI have to say bundling all comments and replies together makes replying a pretty hard task though.  Maybe it'd be easier to use the threading that comes for free in the UI -- i.e., on each individual comments.\r\n\r\n> There are several stages of normalization; what I'd like to highlight here is that of the 4 steps on the comparison ladder (RFC3986 Section 6.2), precisely this particular step should be taken. This might easily be said better somewhere else, and hopefully CRIs will turn out in a way that they are always in syntax based form, and thus the practical comparison is for identity.\r\n\r\nAh OK, I hadn't realised _syntax-based_ is what you were aiming at here.  Maybe s/syntax/syntax-based/ and a ref to the right place in the URI spec would dissolve any potential confusion.\r\n",
+          "createdAt": "2021-09-17T14:44:01Z",
+          "updatedAt": "2021-09-17T14:44:01Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "MEMBER",
+          "body": "> I have to say bundling all comments and replies together makes\n> replying a pretty hard task though.  Maybe it'd be easier to use the\n> threading that comes for free in the UI -- i.e., on each individual\n> comments.\n\nSorry for that -- they arrived at my mailbox in that format, and only\nlater I realized that in the GitHub GUI they show as different threads.\n\n> Ah OK, I hadn't realised _syntax-based_ is what you were aiming at\n> here.  Maybe s/syntax/syntax-based/ and a ref to the right place in\n> the URI spec would dissolve any potential confusion.\n\nGood point, taken for update.\n",
+          "createdAt": "2021-09-17T14:47:04Z",
+          "updatedAt": "2021-09-17T14:47:04Z"
+        },
+        {
+          "author": "chrysn",
+          "authorAssociation": "MEMBER",
+          "body": "Action items for me before merging this:\r\n\r\n* The term I've been looking for was probably DAG with ordering of the edges.\r\n  [edit: it's not, because that doesn't encode when we go down which branch]\r\n  * (It may make sense to mention somewhere in there the possibility that subsets of statements and ontologies limit expresitivity to the point where there can only be one tree through the graph).\r\n* Example of both versions of literals [edit: \"Gift\" -(lang)-> \"de\", -(direction)-> LTR vs. \"Gift\"@de:ltr in the information model] with RDF mapping (with CBOR w/ cri\"\" extension as diagnostic format).\r\n* Spell out dictionary mapping CBOR back and forth to XSD? (Might be moved to different issue that rebuilds RDF mapping based on this)\r\n* Maybe point out things varying in serialization that are not even part of the structured thing (but still may be profiled), like absolute vs relative URs",
+          "createdAt": "2021-09-17T14:53:22Z",
+          "updatedAt": "2021-09-17T17:24:40Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzQ2OTM5MDQ0",
+          "commit": {
+            "abbreviatedOid": "831769a"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thanks!  I've left a few comments.",
+          "createdAt": "2021-09-06T08:04:36Z",
+          "updatedAt": "2021-09-06T08:56:24Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "```suggestion\r\nThe predicate is always a URI in normalized form, and subject and object are either a URI in normalized form, or a concrete CBOR object (a literal).\r\n```",
+              "createdAt": "2021-09-06T08:04:36Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 27,
+              "body": "This para is a tad obscure.  Maybe what we want to say here that is simply that _\"the value of a literal is its CBOR serialisation.\"_ ?",
+              "createdAt": "2021-09-06T08:15:17Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 24,
+              "body": "not sure what \"set\" are we talking about here?\r\nis it the data set?  but if so, why do we need to form both a graph *and* a set: isn't the graph a synonym of dataset (as per L179)?",
+              "createdAt": "2021-09-06T08:17:23Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "is this really an \"ordered tree\" or an \"oriented tree\" would suffice?  If the former, we should also state what the ordering criterion used to sort the children nodes is.\r\n\r\ns/across the graph/over the graph/\r\n\r\nAlso, it's not clear why _\"[it] may span edges multiple times\"_",
+              "createdAt": "2021-09-06T08:32:18Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 36,
+              "body": "not sure I get what _\"to be expressed on\"_ means?",
+              "createdAt": "2021-09-06T08:41:08Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 39,
+              "body": "```suggestion\r\nIn general, arbitrary data can not be expressed in a structured data set, because\r\n```",
+              "createdAt": "2021-09-06T08:41:59Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 41,
+              "body": "s/expresed/expressed/\r\n\r\nnot sure what \"at the same spot\" means?",
+              "createdAt": "2021-09-06T08:47:14Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "there is probably a better way to say _\"taken and expressed\"_ but I don't have any concrete suggestion.",
+              "createdAt": "2021-09-06T08:49:47Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            },
+            {
+              "originalPosition": 49,
+              "body": "not sure what is a _\"null node\"_?\r\nMaybe s/null node/blank node/",
+              "createdAt": "2021-09-06T08:54:19Z",
+              "updatedAt": "2021-09-06T08:56:24Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
