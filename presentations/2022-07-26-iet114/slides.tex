@@ -1,0 +1,143 @@
+\documentclass[aspectratio=169,colorlinks]{beamer}
+\usetheme{Boadilla} % plainest one with slide number footer
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{ulem}
+
+% about the presentation
+\title[CoRAL]{The Constrained RESTful Application Language (CoRAL)}
+\hypersetup{pdftitle={The Constrained RESTful Application Language (CoRAL)}}
+\subtitle{\texttt{draft-ietf-core-coral-05}}
+\author{\textit{Christian~Amsüss}, Thomas~Fossati}
+\date{2022-07-26, IETF 114}
+
+% used commands
+
+\usepackage{verbatim}
+
+\definecolor{darkgreen}{rgb}{0, 0.56, 0}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{Makefile}
+\embedfile{\jobname.tex}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{CoRAL}\Large
+	A data model and language for talking about resources and interactions with them,
+	suitable for constrained devices
+\end{frame}
+
+\begin{frame}{CoRAL: Properties relevant for today}\Large
+	\begin{itemize}
+		\item Information model is similar to RDF
+
+		\item CBOR based representation of URIs and structure
+
+	\end{itemize}
+
+	\vfill
+
+	``{\color{red}My temperature resource} {\color{darkgreen}supports} {\color{blue}the Series Transfer Pattern}.''
+
+	\texttt{{\color{red}</temp>} {\color{darkgreen}core:if} {\color{blue}<tag:example.com,2020,t2trg-stp>}.}
+
+	\vfill
+
+	\normalsize \ldots plus some features not covered today, such as navigation through forms, localization, and convertability with suitable Link Format documents or RDF.
+\end{frame}
+
+\begin{frame}{Recent model simplification: Literals}\Large
+	Literals are terminal nodes in the graph.
+
+	Any properties literals might have are expressed through CBOR tags.
+
+	\bigskip
+
+	\texttt{problem-details} did the hard work here.
+\end{frame}
+
+\begin{frame}{Ongoing work: Compact format based on \texttt{cbor-packed}}\Large
+	\ttfamily
+
+	{\color{darkgreen}core:rt} {\color{blue}pubsub:topic}, \\
+	{\color{blue}pubsub:has-published-item} true, \\
+	{\color{blue}pubsub:created} dt'2019-07-08T15:35:00+0200', \\
+	{\color{blue}pubsub:last-modified} dt'2019-07-08T15:35:00+0200', \\
+
+	{\color{blue}pubsub:topic-data} [ = </ps/data/1234>, \\
+	\qquad {\color{darkgreen}core:title}               "My Office Room Temperature", \\
+	\qquad {\color{darkgreen}core:rt}                  {\color{blue}oic:r.temperature}, \\
+	\qquad {\color{red}our:building}            18, \\
+	\qquad {\color{red}our:floor}               1, \\
+	\qquad {\color{darkgreen}core:unit} {\color{magenta}unit:Cel}, \\
+        ]
+
+\end{frame}
+
+\begin{frame}{Ongoing work: Compact format based on \texttt{cbor-packed}}\Large
+
+	\begin{itemize}
+		\item Some table entries initialized through media type.
+		
+			\texttt{\color{darkgreen}core:title} used compressed as
+			\texttt{[2, {\color{darkgreen}6(14)}, "My Office "\ldots]}
+
+		\item Registered ranges can be loaded without referencing dictionaries by any long identifiers
+
+			\texttt{\color{blue}pubsub:*} pushed into tables through \texttt{TBD({\color{darkgreen}6(16)}, [10, 0], \ldots)}
+
+		\item Custom terms are loaded by referencing URIs
+
+			\texttt{\color{red}our:building} pushed into tables through \texttt{TBD(cri"https://our.example.com/tab", [3, 3], \ldots)}
+
+		\item CRI CURIEs? \texttt{\color{magenta}unit:Cel}
+	\end{itemize}
+
+	\bigskip
+
+	\footnotesize{Also join CBOR on Thursday for discussion of \texttt{cbor-packed}!}
+\end{frame}
+
+\begin{frame}{Ongoing work: Security model}\Large
+	Use existing security models, but tell how to apply them.
+
+	The CoRAL document should provide\ldots
+
+	\begin{itemize}
+		\item to application authors:
+
+			Guidance on expressing their security requirements.
+
+		\item to CoRAL agents:
+
+			Rules for evaluating these security requirements against the authorizations conveyed in CoRAL documents.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Open areas and next steps}\Large
+	\begin{itemize}
+		\item Binary serialization -- needs more real-world examples, especially of forms.
+		\item Mapping to \texttt{problem-details} -- now that that is done.
+		\item Queries, patches, provenance -- likely not in initial version.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks}\Large
+	Comments?
+
+	\bigskip
+
+	Questions?
+\end{frame}
+
+\end{document}
