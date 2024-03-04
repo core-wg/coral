@@ -14,26 +14,23 @@ formats for the description of typed connections between resources on
 the Web ("links"), possible operations on such resources ("forms"), and
 simple resource metadata. 
     ' name="description">
-<meta content="xml2rfc 3.13.0" name="generator">
+<meta content="xml2rfc 3.20.0" name="generator">
 <meta content="draft-ietf-core-coral-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.13.0
-    Python 3.10.4
-    appdirs 1.4.4
-    ConfigArgParse 1.5.3
-    google-i18n-address 2.5.2
-    html5lib 1.1
+  xml2rfc 3.20.0
+    Python 3.11.8
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.0
     intervaltree 3.1.0
     Jinja2 3.1.2
-    kitchen 1.2.6
-    lxml 4.9.1
-    MarkupSafe 2.1.1
+    lxml 4.9.3
+    platformdirs 4.2.0
     pycountry 22.3.5
-    pyflakes 2.4.0
-    PyYAML 6.0
-    requests 2.27.1
-    setuptools 59.4.0
+    PyYAML 6.0.1
+    requests 2.31.0
+    setuptools 68.2.2
     six 1.16.0
+    wcwidth 0.2.13
 -->
 <link href="draft-ietf-core-coral.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -364,29 +361,49 @@ ul.empty li, .ulEmpty li {
   margin-top: 0.5em;
 }
 :is(ul, ol).compact, .ulCompact, .olCompact {
-  line-height: 100%;
+  line-height: 1;
   margin: 0 0 0 2em;
 }
 
 /* definition lists */
 dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl.olPercent {
+  --indent: 5ch;
 }
 dl > dt {
   float: left;
-  margin-right: 1em;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl.dlNewline > dt {
+  float: none;
 }
 dl > dd {
   margin-bottom: .8em;
-  min-height: 1.3em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+dl.olPercent > dt {
+  min-width: calc(var(--indent) - 2ch);
 }
 :is(dl.compact, .dlCompact) > dd {
-  margin-bottom: 0em;
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
 }
 dl > dd > dl {
   margin-top: 0.5em;
-  margin-bottom: 0em;
+  margin-bottom: 0;
 }
-dd.break {
+:is(dd, span).break {
   display: none;
 }
 
@@ -394,11 +411,11 @@ dd.break {
 a, a[href].selfRef:hover {
   text-decoration: none;
 }
-a[href].selfRef {
-  color: var(--text-color);
-}
 a[href] {
   color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
 }
 a[href]:hover {
   text-decoration: underline;
@@ -406,7 +423,7 @@ a[href]:hover {
 a[href].selfRef:hover {
   background-color: var(--highlight-color);
 }
-a.xref {
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
 }
 
@@ -418,7 +435,9 @@ tt, code, pre {
 tt, code {
   /* changing the font for inline elements leads to different ascender
      and descender heights; as we want to retain baseline alignment,
-     remove leading to avoid altering the final height of lines */
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
   line-height: 0;
 }
 :is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
@@ -570,10 +589,14 @@ hr {
 .bcp14 {
   font-variant: small-caps;
   font-weight: 600;
-  font-size: 14.5px;
+  font-size: var(--small-font-size);
 }
 .role {
   font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
 }
 
 /* info block */
@@ -581,17 +604,19 @@ hr {
   margin: 0;
   font-size: var(--small-font-size);
   line-height: 18px;
-  --identifier-width: 8em;
+  --identifier-width: 15ch;
 }
 #identifiers dt {
   width: var(--identifier-width);
-  margin: 0;
+  min-width: var(--identifier-width);
   clear: left;
   float: left;
   text-align: right;
+  margin-right: 1ch;
 }
 #identifiers dd {
-  margin: 0 0 0 calc(1em + var(--identifier-width));
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
   min-width: 5em;
 }
 #identifiers .authors .author {
@@ -628,7 +653,7 @@ hr {
 }
 #toc nav li {
   line-height: 1.3em;
-  margin: 0.75em 0;
+  margin: 2px 0;
   padding-left: 1.2em;
   text-indent: -1.2em;
 }
@@ -639,7 +664,8 @@ hr {
 .references dt {
   text-align: right;
   font-weight: bold;
-  min-width: 7em;
+  min-width: 10ch;
+  margin-right: 1.5ch;
 }
 .references dt:target::before {
   content: "⇒";
@@ -647,7 +673,7 @@ hr {
   margin: 0 10px 0 -25px;
 }
 .references dd {
-  margin-left: 8em;
+  margin-left: 12ch !important;
   overflow: auto;
 }
 
@@ -720,7 +746,7 @@ hr.addr {
     z-index: 2;
     top: 0;
     right: 0;
-    padding: 0;
+    padding: 1px 0 0 0;
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
@@ -844,16 +870,13 @@ hr.addr {
     border-top: none;
     padding-top: 0;
   }
-  figure, pre {
+  figure, pre, .vcard {
     page-break-inside: avoid;
-  }
-  figure {
-    overflow: scroll;
   }
   h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid;
   }
-  h2+*, h3+*, h4+*, h5+*, h6+* {
+  :is(h2, h3, h4, h5, h6)+*, dd {
     page-break-before: avoid;
   }
   pre {
@@ -866,6 +889,9 @@ hr.addr {
   }
   td {
     border-top: 1px solid #ddd;
+  }
+  .toplink {
+    display: none;
   }
 }
 
@@ -912,16 +938,6 @@ section {
 a.toplink {
   float: right;
   margin: 8px 0.5em 0;
-}
-
-/* Fix the dl styling to match the RFC 7992 attributes */
-dl > dt,
-dl.dlParallel > dt {
-  float: left;
-  margin-right: 1em;
-}
-dl.dlNewline > dt {
-  float: none;
 }
 
 /* Provide styling for table cell text alignment */
@@ -977,28 +993,6 @@ address div.right {
   text-align: right;
 }
 
-/* Give the table caption label the same styling as the figcaption */
-
-@media print {
-  .toplink {
-    display: none;
-  }
-
-  /* avoid overwriting the top border line with the ToC header */
-  #toc {
-    padding-top: 1px;
-  }
-
-  /* Avoid page breaks inside dl and author address entries */
-  dd {
-    page-break-before: avoid;
-  }
-  .vcard {
-    page-break-inside: avoid;
-  }
-
-}
-
 /* Dark mode. */
 @media (prefers-color-scheme: dark) {
 :root {
@@ -1024,22 +1018,22 @@ svg :is([stroke="white"], [stroke^="#fff"]) {
 svg :is([fill="black"], [fill^="#000"], :not([fill])) {
   fill: var(--text-color);
 }
-svg :is([stroke="fill"], [fill^="#fff"]) {
+svg :is([fill="white"], [fill^="#fff"]) {
   fill: var(--background-color);
 }
 </style>
 
 </head>
-<body>
+<body class="xml2rfc">
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Constrained RESTful Application Language</td>
-<td class="right">July 2022</td>
+<td class="right">March 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Amsüss &amp; Fossati</td>
-<td class="center">Expires 27 January 2023</td>
+<td class="center">Expires 5 September 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1052,12 +1046,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-core-coral-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-07-26" class="published">26 July 2022</time>
+<time datetime="2024-03-04" class="published">4 March 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-01-27">27 January 2023</time></dd>
+<dd class="expires"><time datetime="2024-09-05">5 September 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1108,7 +1102,7 @@ Companion material for this Internet-Draft can be found at
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 January 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1117,7 +1111,7 @@ Companion material for this Internet-Draft can be found at
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2022 IETF Trust and the persons identified as the
+            Copyright (c) 2024 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1138,234 +1132,234 @@ Companion material for this Internet-Draft can be found at
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-data-and-interaction-model" class="xref">Data and Interaction Model</a></p>
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-data-and-interaction-model" class="internal xref">Data and Interaction Model</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="xref">1.2</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a></p>
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-notational-conventions" class="internal xref">Notational Conventions</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-data-and-interaction-model-2" class="xref">Data and Interaction Model</a></p>
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-data-and-interaction-model-2" class="internal xref">Data and Interaction Model</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-browsing-context" class="xref">Browsing Context</a></p>
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-browsing-context" class="internal xref">Browsing Context</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
-                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-documents" class="xref">Documents</a></p>
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-documents" class="internal xref">Documents</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
-                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-data-model" class="xref">Data model</a></p>
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-data-model" class="internal xref">Data model</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3.2.1">
-                    <p id="section-toc.1-1.2.2.3.2.1.1"><a href="#section-2.3.1" class="xref">2.3.1</a>.  <a href="#name-observations" class="xref">Observations</a></p>
+                    <p id="section-toc.1-1.2.2.3.2.1.1"><a href="#section-2.3.1" class="auto internal xref">2.3.1</a>.  <a href="#name-observations" class="internal xref">Observations</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3.2.2">
-                    <p id="section-toc.1-1.2.2.3.2.2.1"><a href="#section-2.3.2" class="xref">2.3.2</a>.  <a href="#name-possible-variations" class="xref">Possible variations</a></p>
+                    <p id="section-toc.1-1.2.2.3.2.2.1"><a href="#section-2.3.2" class="auto internal xref">2.3.2</a>.  <a href="#name-possible-variations" class="internal xref">Possible variations</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3.2.3">
-                    <p id="section-toc.1-1.2.2.3.2.3.1"><a href="#section-2.3.3" class="xref">2.3.3</a>.  <a href="#name-examples" class="xref">Examples</a></p>
+                    <p id="section-toc.1-1.2.2.3.2.3.1"><a href="#section-2.3.3" class="auto internal xref">2.3.3</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
-                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-serialization-format" class="xref">Serialization Format</a></p>
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-serialization-format" class="internal xref">Serialization Format</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.5">
-                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="xref">2.5</a>.  <a href="#name-links" class="xref">Links</a></p>
+                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="auto internal xref">2.5</a>.  <a href="#name-links" class="internal xref">Links</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.6">
-                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="xref">2.6</a>.  <a href="#name-forms" class="xref">Forms</a></p>
+                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="auto internal xref">2.6</a>.  <a href="#name-forms" class="internal xref">Forms</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.7">
-                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="xref">2.7</a>.  <a href="#name-form-fields" class="xref">Form Fields</a></p>
+                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="auto internal xref">2.7</a>.  <a href="#name-form-fields" class="internal xref">Form Fields</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.8">
-                <p id="section-toc.1-1.2.2.8.1"><a href="#section-2.8" class="xref">2.8</a>.  <a href="#name-navigation" class="xref">Navigation</a></p>
+                <p id="section-toc.1-1.2.2.8.1"><a href="#section-2.8" class="auto internal xref">2.8</a>.  <a href="#name-navigation" class="internal xref">Navigation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.9">
-                <p id="section-toc.1-1.2.2.9.1"><a href="#section-2.9" class="xref">2.9</a>.  <a href="#name-history-traversal" class="xref">History Traversal</a></p>
+                <p id="section-toc.1-1.2.2.9.1"><a href="#section-2.9" class="auto internal xref">2.9</a>.  <a href="#name-history-traversal" class="internal xref">History Traversal</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.10">
-                <p id="section-toc.1-1.2.2.10.1"><a href="#section-2.10" class="xref">2.10</a>. <a href="#name-designing-interactions-in-a" class="xref">Designing interactions in an Open World</a></p>
+                <p id="section-toc.1-1.2.2.10.1"><a href="#section-2.10" class="auto internal xref">2.10</a>. <a href="#name-designing-interactions-in-a" class="internal xref">Designing interactions in an Open World</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-binary-format" class="xref">Binary Format</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-binary-format" class="internal xref">Binary Format</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-data-structure" class="xref">Data Structure</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-data-structure" class="internal xref">Data Structure</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.1">
-                    <p id="section-toc.1-1.3.2.1.2.1.1"><a href="#section-3.1.1" class="xref">3.1.1</a>.  <a href="#name-documents-2" class="xref">Documents</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.1.1"><a href="#section-3.1.1" class="auto internal xref">3.1.1</a>.  <a href="#name-documents-2" class="internal xref">Documents</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.2">
-                    <p id="section-toc.1-1.3.2.1.2.2.1"><a href="#section-3.1.2" class="xref">3.1.2</a>.  <a href="#name-directives" class="xref">Directives</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.2.1"><a href="#section-3.1.2" class="auto internal xref">3.1.2</a>.  <a href="#name-directives" class="internal xref">Directives</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.3">
-                    <p id="section-toc.1-1.3.2.1.2.3.1"><a href="#section-3.1.3" class="xref">3.1.3</a>.  <a href="#name-uris" class="xref">URIs</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.3.1"><a href="#section-3.1.3" class="auto internal xref">3.1.3</a>.  <a href="#name-uris" class="internal xref">URIs</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.4">
-                    <p id="section-toc.1-1.3.2.1.2.4.1"><a href="#section-3.1.4" class="xref">3.1.4</a>.  <a href="#name-links-2" class="xref">Links</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.4.1"><a href="#section-3.1.4" class="auto internal xref">3.1.4</a>.  <a href="#name-links-2" class="internal xref">Links</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.5">
-                    <p id="section-toc.1-1.3.2.1.2.5.1"><a href="#section-3.1.5" class="xref">3.1.5</a>.  <a href="#name-forms-2" class="xref">Forms</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.5.1"><a href="#section-3.1.5" class="auto internal xref">3.1.5</a>.  <a href="#name-forms-2" class="internal xref">Forms</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.6">
-                    <p id="section-toc.1-1.3.2.1.2.6.1"><a href="#section-3.1.6" class="xref">3.1.6</a>.  <a href="#name-form-fields-2" class="xref">Form Fields</a></p>
+                    <p id="section-toc.1-1.3.2.1.2.6.1"><a href="#section-3.1.6" class="auto internal xref">3.1.6</a>.  <a href="#name-form-fields-2" class="internal xref">Form Fields</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-dictionary-compression" class="xref">Dictionary Compression</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-dictionary-compression" class="internal xref">Dictionary Compression</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
-                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="xref">3.2.1</a>.  <a href="#name-media-type-parameter" class="xref">Media Type Parameter</a></p>
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-media-type-parameter" class="internal xref">Media Type Parameter</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-export-interface" class="xref">Export Interface</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-export-interface" class="internal xref">Export Interface</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-document-semantics" class="xref">Document Semantics</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-document-semantics" class="internal xref">Document Semantics</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-submitting-documents" class="xref">Submitting Documents</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-submitting-documents" class="internal xref">Submitting Documents</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.1">
-                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="xref">4.1.1</a>.  <a href="#name-put-requests" class="xref">PUT Requests</a></p>
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-put-requests" class="internal xref">PUT Requests</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.2">
-                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="xref">4.1.2</a>.  <a href="#name-post-requests" class="xref">POST Requests</a></p>
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-post-requests" class="internal xref">POST Requests</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-returning-documents" class="xref">Returning Documents</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-returning-documents" class="internal xref">Returning Documents</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.1">
-                    <p id="section-toc.1-1.4.2.2.2.1.1"><a href="#section-4.2.1" class="xref">4.2.1</a>.  <a href="#name-success-responses" class="xref">Success Responses</a></p>
+                    <p id="section-toc.1-1.4.2.2.2.1.1"><a href="#section-4.2.1" class="auto internal xref">4.2.1</a>.  <a href="#name-success-responses" class="internal xref">Success Responses</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.2">
-                    <p id="section-toc.1-1.4.2.2.2.2.1"><a href="#section-4.2.2" class="xref">4.2.2</a>.  <a href="#name-redirection-responses" class="xref">Redirection Responses</a></p>
+                    <p id="section-toc.1-1.4.2.2.2.2.1"><a href="#section-4.2.2" class="auto internal xref">4.2.2</a>.  <a href="#name-redirection-responses" class="internal xref">Redirection Responses</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.3">
-                    <p id="section-toc.1-1.4.2.2.2.3.1"><a href="#section-4.2.3" class="xref">4.2.3</a>.  <a href="#name-error-responses" class="xref">Error Responses</a></p>
+                    <p id="section-toc.1-1.4.2.2.2.3.1"><a href="#section-4.2.3" class="auto internal xref">4.2.3</a>.  <a href="#name-error-responses" class="internal xref">Error Responses</a></p>
 </li>
                 </ul>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-usage-considerations" class="xref">Usage Considerations</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-usage-considerations" class="internal xref">Usage Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-specifying-coral-based-appl" class="xref">Specifying CoRAL-based Applications</a></p>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-specifying-coral-based-appl" class="internal xref">Specifying CoRAL-based Applications</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.1">
-                    <p id="section-toc.1-1.5.2.1.2.1.1"><a href="#section-5.1.1" class="xref">5.1.1</a>.  <a href="#name-application-interfaces" class="xref">Application Interfaces</a></p>
+                    <p id="section-toc.1-1.5.2.1.2.1.1"><a href="#section-5.1.1" class="auto internal xref">5.1.1</a>.  <a href="#name-application-interfaces" class="internal xref">Application Interfaces</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.2">
-                    <p id="section-toc.1-1.5.2.1.2.2.1"><a href="#section-5.1.2" class="xref">5.1.2</a>.  <a href="#name-resource-identifiers" class="xref">Resource Identifiers</a></p>
+                    <p id="section-toc.1-1.5.2.1.2.2.1"><a href="#section-5.1.2" class="auto internal xref">5.1.2</a>.  <a href="#name-resource-identifiers" class="internal xref">Resource Identifiers</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.3">
-                    <p id="section-toc.1-1.5.2.1.2.3.1"><a href="#section-5.1.3" class="xref">5.1.3</a>.  <a href="#name-implementation-limits" class="xref">Implementation Limits</a></p>
+                    <p id="section-toc.1-1.5.2.1.2.3.1"><a href="#section-5.1.3" class="auto internal xref">5.1.3</a>.  <a href="#name-implementation-limits" class="internal xref">Implementation Limits</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-minting-vocabulary" class="xref">Minting Vocabulary</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-minting-vocabulary" class="internal xref">Minting Vocabulary</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="xref">5.3</a>.  <a href="#name-expressing-registered-link-" class="xref">Expressing Registered Link Relation Types</a></p>
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-expressing-registered-link-" class="internal xref">Expressing Registered Link Relation Types</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
-                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="xref">5.4</a>.  <a href="#name-expressing-simple-rdf-state" class="xref">Expressing Simple RDF Statements</a></p>
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-expressing-simple-rdf-state" class="internal xref">Expressing Simple RDF Statements</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
-                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="xref">5.5</a>.  <a href="#name-expressing-natural-language" class="xref">Expressing Natural Language Texts</a></p>
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-expressing-natural-language" class="internal xref">Expressing Natural Language Texts</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.6">
-                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="xref">5.6</a>.  <a href="#name-embedding-representations-i" class="xref">Embedding Representations in CoRAL</a></p>
+                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-embedding-representations-i" class="internal xref">Embedding Representations in CoRAL</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-media-type-application-cora" class="xref">Media Type "application/coral+cbor"</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-media-type-application-cora" class="internal xref">Media Type "application/coral+cbor"</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-coap-content-formats" class="xref">CoAP Content Formats</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-coap-content-formats" class="internal xref">CoAP Content Formats</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-references" class="xref">References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-references" class="internal xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-core-vocabulary" class="xref">Core Vocabulary</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-core-vocabulary" class="internal xref">Core Vocabulary</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#appendix-A.1" class="xref">A.1</a>.  <a href="#name-base" class="xref">Base</a></p>
+                <p id="section-toc.1-1.9.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-base" class="internal xref">Base</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#appendix-A.2" class="xref">A.2</a>.  <a href="#name-collections" class="xref">Collections</a></p>
+                <p id="section-toc.1-1.9.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-collections" class="internal xref">Collections</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
-                <p id="section-toc.1-1.9.2.3.1"><a href="#appendix-A.3" class="xref">A.3</a>.  <a href="#name-http" class="xref">HTTP</a></p>
+                <p id="section-toc.1-1.9.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-http" class="internal xref">HTTP</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
-                <p id="section-toc.1-1.9.2.4.1"><a href="#appendix-A.4" class="xref">A.4</a>.  <a href="#name-coap" class="xref">CoAP</a></p>
+                <p id="section-toc.1-1.9.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-coap" class="internal xref">CoAP</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="xref">Appendix B</a>.  <a href="#name-default-dictionary" class="xref">Default Dictionary</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-default-dictionary" class="internal xref">Default Dictionary</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-C" class="xref">Appendix C</a>.  <a href="#name-mappings-to-other-formats" class="xref">Mappings to other formats</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-mappings-to-other-formats" class="internal xref">Mappings to other formats</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-C.1" class="xref">C.1</a>.  <a href="#name-rdf" class="xref">RDF</a></p>
+                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-rdf" class="internal xref">RDF</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1.2.1">
-                    <p id="section-toc.1-1.11.2.1.2.1.1"><a href="#appendix-C.1.1" class="xref">C.1.1</a>.  <a href="#name-example" class="xref">Example</a></p>
+                    <p id="section-toc.1-1.11.2.1.2.1.1"><a href="#appendix-C.1.1" class="auto internal xref">C.1.1</a>.  <a href="#name-example" class="internal xref">Example</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-C.2" class="xref">C.2</a>.  <a href="#name-core-link-format" class="xref">CoRE Link Format</a></p>
+                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-core-link-format" class="internal xref">CoRE Link Format</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-D" class="xref">Appendix D</a>.  <a href="#name-change-log" class="xref">Change Log</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#appendix-D" class="auto internal xref">Appendix D</a>.  <a href="#name-change-log" class="internal xref">Change Log</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-E" class="xref"></a><a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-F" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#appendix-F" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1384,8 +1378,8 @@ simple resource metadata.<a href="#section-1-1" class="pilcrow">¶</a></p>
 Web application based on a standardized vocabulary of link relation
 types and operation types.
 It is designed to be used in conjunction with a Web transfer protocol,
-such as the <span><a href="#RFC7230" class="xref">Hypertext Transfer Protocol (HTTP)</a> [<a href="#RFC7230" class="xref">RFC7230</a>]</span> or the
-<span><a href="#RFC7252" class="xref">Constrained Application Protocol (CoAP)</a> [<a href="#RFC7252" class="xref">RFC7252</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+such as the <span><a href="#RFC7230" class="internal xref">Hypertext Transfer Protocol (HTTP)</a> [<a href="#RFC7230" class="cite xref">RFC7230</a>]</span> or the
+<span><a href="#RFC7252" class="internal xref">Constrained Application Protocol (CoAP)</a> [<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">This document defines the CoRAL data model and interaction model as well
 as a compact serialization format.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="data-and-interaction-model">
@@ -1393,10 +1387,10 @@ as a compact serialization format.<a href="#section-1-3" class="pilcrow">¶</a><
         <h3 id="name-data-and-interaction-model">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-data-and-interaction-model" class="section-name selfRef">Data and Interaction Model</a>
         </h3>
-<p id="section-1.1-1">The data model is similar to the <span><a href="#W3C.REC-rdf11-concepts-20140225" class="xref">Resource Description Framework (RDF)</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="xref">W3C.REC-rdf11-concepts-20140225</a>]</span> model,
+<p id="section-1.1-1">The data model is similar to the <span><a href="#W3C.REC-rdf11-concepts-20140225" class="internal xref">Resource Description Framework (RDF)</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="cite xref">W3C.REC-rdf11-concepts-20140225</a>]</span> model,
 with provisions to enable form based interaction
-and to express data from Web Linking (<span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span>) based models such as <span>[<a href="#RFC6690" class="xref">RFC6690</a>]</span>'s Link Format.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">The interaction model derives from the processing model of <span><a href="#W3C.REC-html52-20171214" class="xref">HTML</a> [<a href="#W3C.REC-html52-20171214" class="xref">W3C.REC-html52-20171214</a>]</span> and specifies how an
+and to express data from Web Linking (<span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>) based models such as <span>[<a href="#RFC6690" class="cite xref">RFC6690</a>]</span>'s Link Format.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">The interaction model derives from the processing model of <span><a href="#W3C.REC-html52-20171214" class="internal xref">HTML</a> [<a href="#W3C.REC-html52-20171214" class="cite xref">W3C.REC-html52-20171214</a>]</span> and specifies how an
 automated software agent can change the application state by
 navigating between resources following links and performing operations
 on resources submitting forms.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
@@ -1409,7 +1403,7 @@ on resources submitting forms.<a href="#section-1.1-2" class="pilcrow">¶</a></p
         </h3>
 <p id="section-1.2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
-described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.2-2">Terms defined in this document appear in <em>cursive</em> where they
 are introduced (rendered in plain text as the new term surrounded by
@@ -1424,7 +1418,7 @@ underscores).<a href="#section-1.2-2" class="pilcrow">¶</a></p>
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-data-and-interaction-model-2" class="section-name selfRef">Data and Interaction Model</a>
       </h2>
 <p id="section-2-1">The Constrained RESTful Application Language (CoRAL) is designed for
-building <span><a href="#W3C.REC-webarch-20041215" class="xref">Web-based applications</a> [<a href="#W3C.REC-webarch-20041215" class="xref">W3C.REC-webarch-20041215</a>]</span> in which
+building <span><a href="#W3C.REC-webarch-20041215" class="internal xref">Web-based applications</a> [<a href="#W3C.REC-webarch-20041215" class="cite xref">W3C.REC-webarch-20041215</a>]</span> in which
 automated software agents navigate between resources by following
 links and perform operations on resources by submitting forms.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <div id="browsing-context">
@@ -1432,7 +1426,7 @@ links and perform operations on resources by submitting forms.<a href="#section-
         <h3 id="name-browsing-context">
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-browsing-context" class="section-name selfRef">Browsing Context</a>
         </h3>
-<p id="section-2.1-1">Borrowing from <span><a href="#W3C.REC-html52-20171214" class="xref">HTML 5</a> [<a href="#W3C.REC-html52-20171214" class="xref">W3C.REC-html52-20171214</a>]</span>,
+<p id="section-2.1-1">Borrowing from <span><a href="#W3C.REC-html52-20171214" class="internal xref">HTML 5</a> [<a href="#W3C.REC-html52-20171214" class="cite xref">W3C.REC-html52-20171214</a>]</span>,
 each such agent maintains a <em>browsing context</em> in which the
 representations of Web resources are processed.
 (In HTML, the browsing context typically corresponds to a tab or
@@ -1465,13 +1459,13 @@ or to concisely represent compound statements (e.g., to express forms).<a href="
         <h3 id="name-data-model">
 <a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-data-model" class="section-name selfRef">Data model</a>
         </h3>
-<p id="section-2.3-1">The <em>basic CoRAL information model</em> is similar to the <span><a href="#W3C.REC-rdf11-concepts-20140225" class="xref">Resource Description Framework (RDF)</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="xref">W3C.REC-rdf11-concepts-20140225</a>]</span> information model:
+<p id="section-2.3-1">The <em>basic CoRAL information model</em> is similar to the <span><a href="#W3C.REC-rdf11-concepts-20140225" class="internal xref">Resource Description Framework (RDF)</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="cite xref">W3C.REC-rdf11-concepts-20140225</a>]</span> information model:
 Data is expressed as an (unordered) set of triples (also called statements),
 consisting of a subject, a predicate and an object.
 The predicate is always a URI,
 the subject is a URI or a blank node,
 and the object is either a URI, a blank node or a litreal.
-All URIs here are limited to the syntax-based normalized form of <span>[<a href="#RFC3986" class="xref">RFC3986</a>]</span> Section 6.2.2.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+All URIs here are limited to the syntax-based normalized form of <span>[<a href="#RFC3986" class="cite xref">RFC3986</a>]</span> Section 6.2.2.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <p id="section-2.3-2">Blank nodes are unnamed entities.
 Literals are CBOR objects.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">These triples form a directed multigraph with the subject and object being source and destination, and the predicate a description  on the edge.
@@ -1486,14 +1480,17 @@ its value is equal to the other literal's value in the CBOR generic data model.<
 starting at a node identifying the document (its retrieval context, typically URI from which it was obtained)
 where<a href="#section-2.3-6" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.3-7.1">each edge is passed at least one time in total,<a href="#section-2.3-7.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.3-7.1">
+            <p id="section-2.3-7.1.1">each edge is passed at least one time in total,<a href="#section-2.3-7.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.3-7.2">each edge is passed at most one time after each passing that ends in its start point
-(with the obvious exception that edges from the retrieval context can be passed once from the start), and<a href="#section-2.3-7.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-2.3-7.2">
+            <p id="section-2.3-7.2.1">each edge is passed at most one time after each passing that ends in its start point
+(with the obvious exception that edges from the retrieval context can be passed once from the start), and<a href="#section-2.3-7.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-2.3-7.3">between a passing of an edge from A to B and a later passing from B to C,
+          <li class="normal" id="section-2.3-7.3">
+            <p id="section-2.3-7.3.1">between a passing of an edge from A to B and a later passing from B to C,
 passings can only be along edges that can be reached from B along the graph,
-until B is the end of a different passing.<a href="#section-2.3-7.3" class="pilcrow">¶</a>
+until B is the end of a different passing.<a href="#section-2.3-7.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-2.3-8">For better understanding,
@@ -1517,9 +1514,11 @@ If a node has more than one parent, its children may be expressed on any non-emp
 to obtain a structured data set that expresses the same data set.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
 <p id="section-2.3.1-2">In general, arbitrary basic data can not be expressed in a structured data set, because<a href="#section-2.3.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.3.1-3.1">There may not be a tree that covers the directed graph, or the tree's root may not be the retrieval context.<a href="#section-2.3.1-3.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.3.1-3.1">
+              <p id="section-2.3.1-3.1.1">There may not be a tree that covers the directed graph, or the tree's root may not be the retrieval context.<a href="#section-2.3.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-2.3.1-3.2">There may be multiple edges into a blank node.<a href="#section-2.3.1-3.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.3.1-3.2">
+              <p id="section-2.3.1-3.2.1">There may be multiple edges into a blank node.<a href="#section-2.3.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-2.3.1-4">In particular, the precise data from one structured information document can only be expressed with the same retrieval context.
@@ -1535,7 +1534,7 @@ and are used by the interaction model for special operations.<a href="#section-2
 Which precise structure is picked is to suit the processing application, typically by profiling the information and its serialization.
 It is recommended that the information encoded in the structure (including the order) be derived from data available in the general data set,
 even though the statements that guide the structure are not necessarily encoded in the subset of data that is being structured.<a href="#section-2.3.1-6" class="pilcrow">¶</a></p>
-<p id="section-2.3.1-7">Serializations like the one in <a href="#binary" class="xref">Section 3</a> have even more choices than the structured information model:
+<p id="section-2.3.1-7">Serializations like the one in <a href="#binary" class="auto internal xref">Section 3</a> have even more choices than the structured information model:
 They can choose to use or not use packed CBOR to compress parts,
 can spell out URIs in full or use relative references,
 or can exercise freedoms of the CBOR encoding.
@@ -1548,7 +1547,8 @@ Variation there is not to have an influence on the interpretation of a CoRAL doc
 <a href="#section-2.3.2" class="section-number selfRef">2.3.2. </a><a href="#name-possible-variations" class="section-name selfRef">Possible variations</a>
           </h4>
 <ul class="normal">
-<li class="normal" id="section-2.3.2-1.1">Each URI is tagged with whether it is intended to be dereferenced or used as an identifier.<a href="#section-2.3.2-1.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.3.2-1.1">
+              <p id="section-2.3.2-1.1.1">Each URI is tagged with whether it is intended to be dereferenced or used as an identifier.<a href="#section-2.3.2-1.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -1558,7 +1558,7 @@ Variation there is not to have an influence on the interpretation of a CoRAL doc
           <h4 id="name-examples">
 <a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
           </h4>
-<p id="section-2.3.3-1">This subsection illustrates the information model and serialization based on an example from <span>[<a href="#RFC6690" class="xref">RFC6690</a>]</span>:<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.3-1">This subsection illustrates the information model and serialization based on an example from <span>[<a href="#RFC6690" class="cite xref">RFC6690</a>]</span>:<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
 <span id="name-original-example-at-coap-we"></span><div id="fig-6690-orig">
 <figure id="figure-1">
             <div class="alignLeft art-text artwork" id="section-2.3.3-2.1">
@@ -1574,7 +1574,7 @@ Variation there is not to have an influence on the interpretation of a CoRAL doc
 <a href="#name-original-example-at-coap-we" class="selfRef">Original example at coap://.../.well-known/core</a>
             </figcaption></figure>
 </div>
-<p id="section-2.3.3-3">After an extraction described in <a href="#convert-6690" class="xref">Appendix C.2</a>, this list represents the content of the basic information model representing the above.
+<p id="section-2.3.3-3">After an extraction described in <a href="#convert-6690" class="auto internal xref">Appendix C.2</a>, this list represents the content of the basic information model representing the above.
 For the basic model, the table is to be considered unsorted in the first step.<a href="#section-2.3.3-3" class="pilcrow">¶</a></p>
 <span id="name-basic-and-through-the-seque"></span><div id="fig-6690-data">
 <table class="center" id="table-1">
@@ -1687,8 +1687,8 @@ the use of the packing described with the conversion results in a binary CBOR fi
             <h5 id="name-literal-example">
 <a href="#section-2.3.3.1" class="section-number selfRef">2.3.3.1. </a><a href="#name-literal-example" class="section-name selfRef">Literal example</a>
             </h5>
-<p id="section-2.3.3.1-1">To illustrate non-trivial literals, a link example of <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span> is converted.<a href="#section-2.3.3.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.3.3.1-2">(Note that even the conversion scheme hinted at above for <span>[<a href="#RFC6690" class="xref">RFC6690</a>]</span> link format makes no claims at being applicable to general purpose web links like the below;
+<p id="section-2.3.3.1-1">To illustrate non-trivial literals, a link example of <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> is converted.<a href="#section-2.3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.3.1-2">(Note that even the conversion scheme hinted at above for <span>[<a href="#RFC6690" class="cite xref">RFC6690</a>]</span> link format makes no claims at being applicable to general purpose web links like the below;
 this is merely done to demonstrate how literals can be handled.
 The example even so happens well illustrate that point:
 General link attributes may only be valid on the target when the link is followed in that direction ("letztes Kapitel" means last chapter),
@@ -1761,25 +1761,25 @@ whereas convertible  link-format documents use titles that apply to the describe
 <a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-serialization-format" class="section-name selfRef">Serialization Format</a>
         </h3>
 <p id="section-2.4-1">The primary serialization format is a compact, binary encoding of
-links and forms in <span><a href="#RFC8949" class="xref">Concise Binary Object Representation (CBOR)</a> [<a href="#RFC8949" class="xref">RFC8949</a>]</span>.
-This format is intended for <span><a href="#RFC7228" class="xref">environments with constraints on power,
-memory, and processing resources</a> [<a href="#RFC7228" class="xref">RFC7228</a>]</span> and
+links and forms in <span><a href="#RFC8949" class="internal xref">Concise Binary Object Representation (CBOR)</a> [<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>.
+This format is intended for <span><a href="#RFC7228" class="internal xref">environments with constraints on power,
+memory, and processing resources</a> [<a href="#RFC7228" class="cite xref">RFC7228</a>]</span> and
 shares many similarities with the message format of CoAP:
 In place of verbose strings, small numeric identifiers are used to encode
-link relation types and operation types. <span><a href="#RFC3986" class="xref">Uniform Resource Identifiers (URIs)</a> [<a href="#RFC3986" class="xref">RFC3986</a>]</span> are
-expressed as <span><a href="#I-D.ietf-core-href" class="xref">Constrained Resource Identifier (CRI) references</a> [<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span>
+link relation types and operation types. <span><a href="#RFC3986" class="internal xref">Uniform Resource Identifiers (URIs)</a> [<a href="#RFC3986" class="cite xref">RFC3986</a>]</span> are
+expressed as <span><a href="#I-D.ietf-core-href" class="internal xref">Constrained Resource Identifier (CRI) references</a> [<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span>
 and thus pre-parsed for easy use with CoAP.
 As a result, link serializations in CoRAL are often much more compact
-and easier to process than equivalent serializations in <span><a href="#RFC6690" class="xref">CoRE Link
-Format</a> [<a href="#RFC6690" class="xref">RFC6690</a>]</span>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+and easier to process than equivalent serializations in <span><a href="#RFC6690" class="internal xref">CoRE Link
+Format</a> [<a href="#RFC6690" class="cite xref">RFC6690</a>]</span>.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
 <p id="section-2.4-2">For easy representation of CoRAL documents in text,
 CBOR diagnostic notation is used.
 Along with indentation and comments,
-the notation introduced in <span>[<a href="#I-D.bormann-cbor-edn-literals" class="xref">I-D.bormann-cbor-edn-literals</a>]</span> is used to represent CRIs.
+the notation introduced in <span>[<a href="#I-D.bormann-cbor-edn-literals" class="cite xref">I-D.bormann-cbor-edn-literals</a>]</span> is used to represent CRIs.
 This format is not expected to be sent over the network.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
 <p id="section-2.4-3">[ To be discussed:
 For even better readability,
-the RDF <span><a href="#W3C.REC-turtle-20140225" class="xref">Turtle</a> [<a href="#W3C.REC-turtle-20140225" class="xref">W3C.REC-turtle-20140225</a>]</span> format
+the RDF <span><a href="#W3C.REC-turtle-20140225" class="internal xref">Turtle</a> [<a href="#W3C.REC-turtle-20140225" class="cite xref">W3C.REC-turtle-20140225</a>]</span> format
 can be used when only the basic information model content is to be conveyed.
 When used like this, the conversion according to the RDF appendix is implied.
 ]<a href="#section-2.4-3" class="pilcrow">¶</a></p>
@@ -1792,14 +1792,14 @@ When used like this, the conversion according to the RDF appendix is implied.
         </h3>
 <p id="section-2.5-1">Any statement "links" a resource with a second resource or literal,
 and is thus also referred to as a link.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
-<p id="section-2.5-2">In <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span> terminology, a CoRAL link's
+<p id="section-2.5-2">In <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> terminology, a CoRAL link's
 subject is the <em>link context</em>,
 the predicate is the <em>link relation type</em>, and
 the object is the <em>link target</em>.<a href="#section-2.5-2" class="pilcrow">¶</a></p>
 <p id="section-2.5-3">However, a link in CoRAL does not have target attributes. Instead, a
 link may have a list of zero or more nested elements. These enable
 both the description of resource metadata and the chaining of links,
-which is done in <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span> by setting the anchor of one link to the
+which is done in <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> by setting the anchor of one link to the
 target of another.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-2.5-4.1">
@@ -1809,10 +1809,10 @@ target of another.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-2.5-5">A link relation type identifies the semantics of a link.
-In HTML and in <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span>, link relation types are typically denoted by an
+In HTML and in <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>, link relation types are typically denoted by an
 IANA-registered name, such as <code>stylesheet</code> or <code>type</code>. In CoRAL, all
-link relation types are, in contrast, denoted by a <span><a href="#RFC3986" class="xref">Universal
-Resource Identifier (URI)</a> [<a href="#RFC3986" class="xref">RFC3986</a>]</span>,
+link relation types are, in contrast, denoted by a <span><a href="#RFC3986" class="internal xref">Universal
+Resource Identifier (URI)</a> [<a href="#RFC3986" class="cite xref">RFC3986</a>]</span>,
 such as &lt;http://www.iana.org/assignments/relation/stylesheet&gt; or
 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt;.
 This allows for the decentralized creation of new link relation types
@@ -1822,7 +1822,7 @@ URIs can also lead to documentation, schema, and other information
 about a link relation type.
 In CoRAL documents, these URIs are only used as identity tokens,
 though, and are compared with Simple String Comparison as specified in
-<span><a href="https://rfc-editor.org/rfc/rfc3986#section-6.2.1" class="relref">Section 6.2.1</a> of [<a href="#RFC3986" class="xref">RFC3986</a>]</span>.<a href="#section-2.5-5" class="pilcrow">¶</a></p>
+<span><a href="https://rfc-editor.org/rfc/rfc3986#section-6.2.1" class="relref">Section 6.2.1</a> of [<a href="#RFC3986" class="cite xref">RFC3986</a>]</span>.<a href="#section-2.5-5" class="pilcrow">¶</a></p>
 <p id="section-2.5-6">If the link target is a URI and the URI scheme indicates a Web
 transfer protocol like HTTP or CoAP, an agent can dereference the URI
 and navigate the browsing context to its target resource; this is
@@ -1942,25 +1942,28 @@ type, e.g., for the sake of pre-fetching or building a search
 index. However, an agent <span class="bcp14">MUST NOT</span> submit a form without
 understanding the operation type.<a href="#section-2.8-3.1.2" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.2">The agent then finds the link(s) or form(s) with the respective
+          <li id="section-2.8-3.2">
+            <p id="section-2.8-3.2.1">The agent then finds the link(s) or form(s) with the respective
 type in the active representation.
 This may yield one or more candidates, from which the agent will
 have to select the most appropriate one.
 The set of candidates can be empty, for example, when an
-application state transition is not supported or not allowed.<a href="#section-2.8-3.2" class="pilcrow">¶</a>
+application state transition is not supported or not allowed.<a href="#section-2.8-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.3">The agent selects one of the candidates based on the metadata
+          <li id="section-2.8-3.3">
+            <p id="section-2.8-3.3.1">The agent selects one of the candidates based on the metadata
 associated them (in the form of form fields and nested elements)
 and their order of appearance in the document.
 Examples for relevant metadata could include the indication of a
 media type for the target resource representation, the URI
 scheme of a target resource, or the request method of an
-operation.<a href="#section-2.8-3.3" class="pilcrow">¶</a>
+operation.<a href="#section-2.8-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.4">The agent obtains the <em>request URI</em> from the link target or
+          <li id="section-2.8-3.4">
+            <p id="section-2.8-3.4.1">The agent obtains the <em>request URI</em> from the link target or
 submission target.
 Fragment identifiers are not part of the request URI and <span class="bcp14">MUST</span> be
-separated from the rest of the URI prior to the next step.<a href="#section-2.8-3.4" class="pilcrow">¶</a>
+separated from the rest of the URI prior to the next step.<a href="#section-2.8-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.8-3.5">
             <p id="section-2.8-3.5.1">The agent constructs a new request with the request URI.
@@ -1977,23 +1980,27 @@ Depending on the operation type of a form, the agent may also have
 to include a request payload that matches the specifications of
 some form fields.<a href="#section-2.8-3.5.2" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.6">The agent sends the request and receives the response.<a href="#section-2.8-3.6" class="pilcrow">¶</a>
+          <li id="section-2.8-3.6">
+            <p id="section-2.8-3.6.1">The agent sends the request and receives the response.<a href="#section-2.8-3.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.7">If a fragment identifier was separated from the request URI, the
+          <li id="section-2.8-3.7">
+            <p id="section-2.8-3.7.1">If a fragment identifier was separated from the request URI, the
 agent selects the fragment indicated by the fragment
 identifier within the received representation according to the
-semantics of its media type.<a href="#section-2.8-3.7" class="pilcrow">¶</a>
+semantics of its media type.<a href="#section-2.8-3.7.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.8">The agent updates the browsing context by making the (selected
+          <li id="section-2.8-3.8">
+            <p id="section-2.8-3.8.1">The agent updates the browsing context by making the (selected
 fragment of the) received representation the active
-representation.<a href="#section-2.8-3.8" class="pilcrow">¶</a>
+representation.<a href="#section-2.8-3.8.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.8-3.9">Finally, the agent processes the representation according to the
+          <li id="section-2.8-3.9">
+            <p id="section-2.8-3.9.1">Finally, the agent processes the representation according to the
 semantics of its media type.
 If the representation is a CoRAL document (or any other
 representation that implements the CoRAL data and interaction
 model), the agent again has the choice of what to do next. Go to
-step 1.<a href="#section-2.8-3.9" class="pilcrow">¶</a>
+step 1.<a href="#section-2.8-3.9.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -2069,11 +2076,11 @@ the condition "before midnight" can then be expressed in an additional statement
       </h2>
 <p id="section-3-1">This section defines the encoding of documents in the CoRAL binary
 format.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">A document in the binary format is encoded in <span><a href="#RFC8949" class="xref">Concise Binary Object
-Representation (CBOR)</a> [<a href="#RFC8949" class="xref">RFC8949</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">The CBOR structure of a document is presented in the <span><a href="#RFC8610" class="xref">Concise Data
-Definition Language (CDDL)</a> [<a href="#RFC8610" class="xref">RFC8610</a>]</span>.
-All CDDL rules not defined in this document are defined in <span><a href="https://rfc-editor.org/rfc/rfc8610#appendix-D" class="relref">Appendix D</a> of [<a href="#RFC8610" class="xref">RFC8610</a>]</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-2">A document in the binary format is encoded in <span><a href="#RFC8949" class="internal xref">Concise Binary Object
+Representation (CBOR)</a> [<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The CBOR structure of a document is presented in the <span><a href="#RFC8610" class="internal xref">Concise Data
+Definition Language (CDDL)</a> [<a href="#RFC8610" class="cite xref">RFC8610</a>]</span>.
+All CDDL rules not defined in this document are defined in <span><a href="https://rfc-editor.org/rfc/rfc8610#appendix-D" class="relref">Appendix D</a> of [<a href="#RFC8610" class="cite xref">RFC8610</a>]</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <p id="section-3-4">The media type of documents in the binary format is <code>application/coral+cbor</code>.<a href="#section-3-4" class="pilcrow">¶</a></p>
 <div id="data-structure">
 <section id="section-3.1">
@@ -2100,8 +2107,8 @@ a form, or
 a directive.<a href="#section-3.1.1-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.1-2.1">
-              <div id="section-3.1.1-2.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.1-2.1.1">
+<pre>
 document = [*element]
 element = link / form / directive
 </pre><a href="#section-3.1.1-2.1.1" class="pilcrow">¶</a>
@@ -2129,8 +2136,8 @@ processing elements.<a href="#section-3.1.2-1" class="pilcrow">¶</a></p>
 the Base directive.<a href="#section-3.1.2-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.2-3.1">
-              <div id="section-3.1.2-3.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.2-3.1.1">
+<pre>
 directive = base-directive
 </pre><a href="#section-3.1.2-3.1.1" class="pilcrow">¶</a>
 </div>
@@ -2147,20 +2154,20 @@ directive.<a href="#section-3.1.2-4" class="pilcrow">¶</a></p>
 unsigned integer 1 and a base URI.<a href="#section-3.1.2.1-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.2.1-2.1">
-                <div id="section-3.1.2.1-2.1.1">
-<pre class="lang-cddl sourcecode">
+                <div class="lang-cddl sourcecode" id="section-3.1.2.1-2.1.1">
+<pre>
 base-directive = [1, baseURI]
 </pre><a href="#section-3.1.2.1-2.1.1" class="pilcrow">¶</a>
 </div>
 </li>
             </ul>
-<p id="section-3.1.2.1-3">The base URI is denoted by a <span><a href="#I-D.ietf-core-href" class="xref">Constrained Resource Identifier (CRI) reference</a> [<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span>.
+<p id="section-3.1.2.1-3">The base URI is denoted by a <span><a href="#I-D.ietf-core-href" class="internal xref">Constrained Resource Identifier (CRI) reference</a> [<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span>.
 The CRI reference <span class="bcp14">MUST</span> be resolved against the current context
 (not the current base).<a href="#section-3.1.2.1-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.2.1-4.1">
-                <div id="section-3.1.2.1-4.1.1">
-<pre class="lang-cddl sourcecode">
+                <div class="lang-cddl sourcecode" id="section-3.1.2.1-4.1.1">
+<pre>
 baseURI = CRI-Reference
 CRI-Reference = &lt;Defined in Section XX of RFC XXXX&gt;
 </pre><a href="#section-3.1.2.1-4.1.1" class="pilcrow">¶</a>
@@ -2181,15 +2188,15 @@ the current context and assigning the result to the current base.<a href="#secti
 <p id="section-3.1.3-1">URIs in links and forms are encoded as CRI references.<a href="#section-3.1.3-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.3-2.1">
-              <div id="section-3.1.3-2.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.3-2.1.1">
+<pre>
 URI = CRI-Reference
 </pre><a href="#section-3.1.3-2.1.1" class="pilcrow">¶</a>
 </div>
 </li>
           </ul>
 <p id="section-3.1.3-3">A CRI reference is processed by resolving it to a URI as specified
-in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-10#section-5.2" class="relref">Section 5.2</a> of [<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span> using the current base.<a href="#section-3.1.3-3" class="pilcrow">¶</a></p>
+in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-14#section-5.2" class="relref">Section 5.2</a> of [<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span> using the current base.<a href="#section-3.1.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="links-1">
@@ -2202,8 +2209,8 @@ in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-10#
 of zero or more nested elements.<a href="#section-3.1.4-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.4-2.1">
-              <div id="section-3.1.4-2.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.4-2.1.1">
+<pre>
 link = [2, relation-type, link-target, ?[*element]]
 </pre><a href="#section-3.1.4-2.1.1" class="pilcrow">¶</a>
 </div>
@@ -2212,8 +2219,8 @@ link = [2, relation-type, link-target, ?[*element]]
 <p id="section-3.1.4-3">The link relation type is a URI.<a href="#section-3.1.4-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.4-4.1">
-              <div id="section-3.1.4-4.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.4-4.1.1">
+<pre>
 relation-type = URI
 </pre><a href="#section-3.1.4-4.1.1" class="pilcrow">¶</a>
 </div>
@@ -2222,8 +2229,8 @@ relation-type = URI
 <p id="section-3.1.4-5">The link target is either a URI, a literal value, or null.<a href="#section-3.1.4-5" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.4-6.1">
-              <div id="section-3.1.4-6.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.4-6.1.1">
+<pre>
 link-target = URI / literal / null
 literal = bool / int / float / time / bytes / text
 </pre><a href="#section-3.1.4-6.1.1" class="pilcrow">¶</a>
@@ -2247,8 +2254,8 @@ current environment.<a href="#section-3.1.4-7" class="pilcrow">¶</a></p>
 array of zero or more form fields.<a href="#section-3.1.5-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.5-2.1">
-              <div id="section-3.1.5-2.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.5-2.1.1">
+<pre>
 form = [3, operation-type, submission-target, ?[*form-field]]
 </pre><a href="#section-3.1.5-2.1.1" class="pilcrow">¶</a>
 </div>
@@ -2257,8 +2264,8 @@ form = [3, operation-type, submission-target, ?[*form-field]]
 <p id="section-3.1.5-3">The operation type is a URI.<a href="#section-3.1.5-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.5-4.1">
-              <div id="section-3.1.5-4.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.5-4.1.1">
+<pre>
 operation-type = URI
 </pre><a href="#section-3.1.5-4.1.1" class="pilcrow">¶</a>
 </div>
@@ -2267,8 +2274,8 @@ operation-type = URI
 <p id="section-3.1.5-5">The submission target is a URI.<a href="#section-3.1.5-5" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.5-6.1">
-              <div id="section-3.1.5-6.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.5-6.1.1">
+<pre>
 submission-target = URI
 </pre><a href="#section-3.1.5-6.1.1" class="pilcrow">¶</a>
 </div>
@@ -2297,8 +2304,8 @@ field type, a form field value, and, optionally, an array of zero or
 more nested elements.<a href="#section-3.1.6-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.6-2.1">
-              <div id="section-3.1.6-2.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.6-2.1.1">
+<pre>
 form-field = (form-field-type, form-field-value, ?[*element])
 </pre><a href="#section-3.1.6-2.1.1" class="pilcrow">¶</a>
 </div>
@@ -2307,8 +2314,8 @@ form-field = (form-field-type, form-field-value, ?[*element])
 <p id="section-3.1.6-3">The form field type is a URI.<a href="#section-3.1.6-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.6-4.1">
-              <div id="section-3.1.6-4.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.6-4.1.1">
+<pre>
 form-field-type = URI
 </pre><a href="#section-3.1.6-4.1.1" class="pilcrow">¶</a>
 </div>
@@ -2317,8 +2324,8 @@ form-field-type = URI
 <p id="section-3.1.6-5">The form field value is either a URI, a literal value, or null.<a href="#section-3.1.6-5" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.1.6-6.1">
-              <div id="section-3.1.6-6.1.1">
-<pre class="lang-cddl sourcecode">
+              <div class="lang-cddl sourcecode" id="section-3.1.6-6.1.1">
+<pre>
 form-field-value = URI / literal / null
 </pre><a href="#section-3.1.6-6.1.1" class="pilcrow">¶</a>
 </div>
@@ -2340,7 +2347,7 @@ current environment.<a href="#section-3.1.6-7" class="pilcrow">¶</a></p>
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-dictionary-compression" class="section-name selfRef">Dictionary Compression</a>
         </h3>
 <p id="section-3.2-1">A document in the binary format <span class="bcp14">MAY</span> reference values from an external
-dictionary using Packed CBOR <span>[<a href="#I-D.ietf-cbor-packed" class="xref">I-D.ietf-cbor-packed</a>]</span>.
+dictionary using Packed CBOR <span>[<a href="#I-D.ietf-cbor-packed" class="cite xref">I-D.ietf-cbor-packed</a>]</span>.
 This helps to reduce representation size and processing cost.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">Dictionary references can be used
 subject to [ yet to be defined ] profiling.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
@@ -2380,7 +2387,7 @@ scope of this document.)<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
 dictionary; the value of the <code>dictionary</code> parameter <span class="bcp14">MUST</span> be a single
 URI.<a href="#section-3.2.1-4" class="pilcrow">¶</a></p>
 <p id="section-3.2.1-5">The <code>dictionary</code> parameter is <span class="bcp14">OPTIONAL</span>. If it is absent, the default
-dictionary specified in <a href="#default-dictionary" class="xref">Appendix B</a> of this
+dictionary specified in <a href="#default-dictionary" class="auto internal xref">Appendix B</a> of this
 document is assumed.<a href="#section-3.2.1-5" class="pilcrow">¶</a></p>
 <p id="section-3.2.1-6">Once a dictionary has made an assignment, the assignment <span class="bcp14">MUST NOT</span> be
 changed or removed. A dictionary, however, may contain additional
@@ -2390,7 +2397,7 @@ specific values for their parameters, plus an optional content
 coding) are encoded as an unsigned integer called the "content
 format" of a representation.
 For use with CoAP, each new CoRAL dictionary therefore needs to have
-a new content format registered in the <span><a href="#CORE-PARAMETERS" class="xref">CoAP Content Formats Registry</a> [<a href="#CORE-PARAMETERS" class="xref">CORE-PARAMETERS</a>]</span>.<a href="#section-3.2.1-7" class="pilcrow">¶</a></p>
+a new content format registered in the <span><a href="#CORE-PARAMETERS" class="internal xref">CoAP Content Formats Registry</a> [<a href="#CORE-PARAMETERS" class="cite xref">CORE-PARAMETERS</a>]</span>.<a href="#section-3.2.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2406,8 +2413,8 @@ Specifications using CDDL should reference the following rules for
 this purpose:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3.3-2.1">
-            <div id="section-3.3-2.1.1">
-<pre class="lang-cddl sourcecode">
+            <div class="lang-cddl sourcecode" id="section-3.3-2.1.1">
+<pre>
 CoRAL-Document = document
 CoRAL-Link = link
 CoRAL-Form = form
@@ -2564,21 +2571,24 @@ applications and vocabularies.<a href="#section-5-1" class="pilcrow">¶</a></p>
         <h3 id="name-specifying-coral-based-appl">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-specifying-coral-based-appl" class="section-name selfRef">Specifying CoRAL-based Applications</a>
         </h3>
-<p id="section-5.1-1">CoRAL-based applications naturally implement the <span><a href="#W3C.REC-webarch-20041215" class="xref">Web architecture</a> [<a href="#W3C.REC-webarch-20041215" class="xref">W3C.REC-webarch-20041215</a>]</span> and thus are
+<p id="section-5.1-1">CoRAL-based applications naturally implement the <span><a href="#W3C.REC-webarch-20041215" class="internal xref">Web architecture</a> [<a href="#W3C.REC-webarch-20041215" class="cite xref">W3C.REC-webarch-20041215</a>]</span> and thus are
 centered around orthogonal specifications for identification,
 interaction, and representation:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.1-2.1">Resources are identified by URIs or represented by literal values.<a href="#section-5.1-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5.1-2.1">
+            <p id="section-5.1-2.1.1">Resources are identified by URIs or represented by literal values.<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.1-2.2">Interactions are based on the hypermedia interaction model of the
+          <li class="normal" id="section-5.1-2.2">
+            <p id="section-5.1-2.2.1">Interactions are based on the hypermedia interaction model of the
 Web and the methods provided by the Web transfer protocol.
 The semantics of possible interactions are identified by link
-relation types and operation types.<a href="#section-5.1-2.2" class="pilcrow">¶</a>
+relation types and operation types.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.1-2.3">Representations are CoRAL documents encoded in the binary format
-defined in <a href="#binary" class="xref">Section 3</a>.
+          <li class="normal" id="section-5.1-2.3">
+            <p id="section-5.1-2.3.1">Representations are CoRAL documents encoded in the binary format
+defined in <a href="#binary" class="auto internal xref">Section 3</a>.
 Depending on the application, additional representation formats may
-be used.<a href="#section-5.1-2.3" class="pilcrow">¶</a>
+be used.<a href="#section-5.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <div id="application-interfaces">
@@ -2590,18 +2600,23 @@ be used.<a href="#section-5.1-2.3" class="pilcrow">¶</a>
 specific components used in the application interface and their
 identifiers. This should include the following items:<a href="#section-5.1.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.1.1-2.1">The Web transfer protocols supported.<a href="#section-5.1.1-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5.1.1-2.1">
+              <p id="section-5.1.1-2.1.1">The Web transfer protocols supported.<a href="#section-5.1.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.1-2.2">The representation formats used, identified by their Internet
-media types, including the CoRAL serialization formats.<a href="#section-5.1.1-2.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.1-2.2">
+              <p id="section-5.1.1-2.2.1">The representation formats used, identified by their Internet
+media types, including the CoRAL serialization formats.<a href="#section-5.1.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.1-2.3">The link relation types used.<a href="#section-5.1.1-2.3" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.1-2.3">
+              <p id="section-5.1.1-2.3.1">The link relation types used.<a href="#section-5.1.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.1-2.4">The operation types used. Additionally, for each operation type,
-the permissible request methods.<a href="#section-5.1.1-2.4" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.1-2.4">
+              <p id="section-5.1.1-2.4.1">The operation types used. Additionally, for each operation type,
+the permissible request methods.<a href="#section-5.1.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.1-2.5">The form field types used. Additionally, for each form field type,
-the permissible form field values.<a href="#section-5.1.1-2.5" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.1-2.5">
+              <p id="section-5.1.1-2.5.1">The form field types used. Additionally, for each form field type,
+the permissible form field values.<a href="#section-5.1.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2622,13 +2637,13 @@ interfaces (APIs) to make this part of the application
 specification, i.e., to prescribe fixed URI templates that are
 hard-coded in implementations. However, there are
 a number of problems with this
-practice <span>[<a href="#RFC8820" class="xref">RFC8820</a>]</span>.<a href="#section-5.1.2-2" class="pilcrow">¶</a></p>
+practice <span>[<a href="#RFC8820" class="cite xref">RFC8820</a>]</span>.<a href="#section-5.1.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-3">In CoRAL-based applications, resource names are therefore not part
 of the application specification --- they are an implementation
 detail.
 The specification of a CoRAL-based application <span class="bcp14">MUST NOT</span> mandate any
 particular form of resource name structure.<a href="#section-5.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.1.2-4"><span>[<a href="#RFC8820" class="xref">RFC8820</a>]</span> describes the problematic practice of fixed URI structures
+<p id="section-5.1.2-4"><span>[<a href="#RFC8820" class="cite xref">RFC8820</a>]</span> describes the problematic practice of fixed URI structures
 in more detail and provides some acceptable alternatives.<a href="#section-5.1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2645,14 +2660,17 @@ implementation limits that an implementation must support at
 least to be interoperable.<a href="#section-5.1.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.1.3-2">Applications may also mandate the following and other restrictions:<a href="#section-5.1.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.1.3-3.1">Use of only either HTTP or CoAP as the supported Web transfer
-protocol.<a href="#section-5.1.3-3.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5.1.3-3.1">
+              <p id="section-5.1.3-3.1.1">Use of only either HTTP or CoAP as the supported Web transfer
+protocol.<a href="#section-5.1.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.3-3.2">Use of only dictionary references in the binary format for certain
-vocabulary.<a href="#section-5.1.3-3.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.3-3.2">
+              <p id="section-5.1.3-3.2.1">Use of only dictionary references in the binary format for certain
+vocabulary.<a href="#section-5.1.3-3.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-5.1.3-3.3">Use of URI references and CRI references only up to a specific
-length.<a href="#section-5.1.3-3.3" class="pilcrow">¶</a>
+            <li class="normal" id="section-5.1.3-3.3">
+              <p id="section-5.1.3-3.3.1">Use of URI references and CRI references only up to a specific
+length.<a href="#section-5.1.3-3.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2672,20 +2690,24 @@ the semantics, clients <span class="bcp14">SHOULD NOT</span> automatically acces
 to avoid overburdening its server. The URI <span class="bcp14">SHOULD</span> be under the control
 of the person or party defining it, or be delegated to them.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2-2">To avoid interoperability problems, it is <span class="bcp14">RECOMMENDED</span> that only URIs
-are minted that are normalized according to <span><a href="https://rfc-editor.org/rfc/rfc3986#section-6.2" class="relref">Section 6.2</a> of [<a href="#RFC3986" class="xref">RFC3986</a>]</span>.
+are minted that are normalized according to <span><a href="https://rfc-editor.org/rfc/rfc3986#section-6.2" class="relref">Section 6.2</a> of [<a href="#RFC3986" class="cite xref">RFC3986</a>]</span>.
 This is easily achieved when the URIs are defined in CRI form
 (in which they also become part of the dictionary),
 as this avoids many common non-normalized forms of URIs by construction.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.2-3">Non-normalized forms that are still to be avoided include:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.2-4.1">Uppercase characters in scheme names and domain names<a href="#section-5.2-4.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5.2-4.1">
+            <p id="section-5.2-4.1.1">Uppercase characters in scheme names and domain names<a href="#section-5.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-4.2">Explicitly stated HTTP default port (e.g., &lt;http://example.com/&gt; is
-preferable over &lt;http://example.com:80/&gt;)<a href="#section-5.2-4.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.2-4.2">
+            <p id="section-5.2-4.2.1">Explicitly stated HTTP default port (e.g., &lt;http://example.com/&gt; is
+preferable over &lt;http://example.com:80/&gt;)<a href="#section-5.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-4.3">Punycode-encoding of Internationalized Domain Names in URIs<a href="#section-5.2-4.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.2-4.3">
+            <p id="section-5.2-4.3.1">Punycode-encoding of Internationalized Domain Names in URIs<a href="#section-5.2-4.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-4.4">URIs that are not in Unicode Normalization Form C<a href="#section-5.2-4.4" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.2-4.4">
+            <p id="section-5.2-4.4.1">URIs that are not in Unicode Normalization Form C<a href="#section-5.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-5.2-5">URIs that identify vocabulary do not need to be registered. The
@@ -2693,10 +2715,10 @@ inclusion of domain names in URIs allows for the decentralized
 creation of new URIs without the risk of collisions.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 <p id="section-5.2-6">However, URIs can be relatively verbose and impose a high overhead on
 a representation.
-This can be a problem in <span><a href="#RFC7228" class="xref">constrained environments</a> [<a href="#RFC7228" class="xref">RFC7228</a>]</span>.
+This can be a problem in <span><a href="#RFC7228" class="internal xref">constrained environments</a> [<a href="#RFC7228" class="cite xref">RFC7228</a>]</span>.
 Therefore, CoRAL alternatively allows the use of packed references
 that abbreviate CBOR data items from a dictionary, as specified in
-<a href="#dictionary-compression" class="xref">Section 3.2</a>.
+<a href="#dictionary-compression" class="auto internal xref">Section 3.2</a>.
 These impose a much smaller overhead but instead need to be assigned
 by an authority to avoid collisions.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
 </section>
@@ -2706,15 +2728,15 @@ by an authority to avoid collisions.<a href="#section-5.2-6" class="pilcrow">¶<
         <h3 id="name-expressing-registered-link-">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-expressing-registered-link-" class="section-name selfRef">Expressing Registered Link Relation Types</a>
         </h3>
-<p id="section-5.3-1">Link relation types registered in the <span><a href="#LINK-RELATIONS" class="xref">Link Relations
-Registry</a> [<a href="#LINK-RELATIONS" class="xref">LINK-RELATIONS</a>]</span>, such as <code>collection</code> <span>[<a href="#RFC6573" class="xref">RFC6573</a>]</span> or <code>icon</code>
-          <span>[<a href="#W3C.REC-html52-20171214" class="xref">W3C.REC-html52-20171214</a>]</span>, can be used in CoRAL by appending the
+<p id="section-5.3-1">Link relation types registered in the <span><a href="#LINK-RELATIONS" class="internal xref">Link Relations
+Registry</a> [<a href="#LINK-RELATIONS" class="cite xref">LINK-RELATIONS</a>]</span>, such as <code>collection</code> <span>[<a href="#RFC6573" class="cite xref">RFC6573</a>]</span> or <code>icon</code>
+          <span>[<a href="#W3C.REC-html52-20171214" class="cite xref">W3C.REC-html52-20171214</a>]</span>, can be used in CoRAL by appending the
 registered name to the URI
 &lt;http://www.iana.org/assignments/relation/&gt;:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5.3-2.1">
-            <div id="section-5.3-2.1.1">
-<pre class="lang-coral sourcecode">
+            <div class="lang-coral sourcecode" id="section-5.3-2.1.1">
+<pre>
 #using iana = &lt;http://www.iana.org/assignments/relation/&gt;
 
 iana:collection &lt;/items&gt;
@@ -2725,9 +2747,9 @@ iana:icon       &lt;/favicon.png&gt;
         </ul>
 <p id="section-5.3-3">The convention of appending the relation type name to the prefix
 &lt;http://www.iana.org/assignments/relation/&gt; to form URIs is adopted
-from the <span><a href="#RFC4287" class="xref">Atom Syndication Format</a> [<a href="#RFC4287" class="xref">RFC4287</a>]</span>; see also <span><a href="https://rfc-editor.org/rfc/rfc8288#appendix-A.2" class="relref">Appendix A.2</a> of [<a href="#RFC8288" class="xref">RFC8288</a>]</span>.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+from the <span><a href="#RFC4287" class="internal xref">Atom Syndication Format</a> [<a href="#RFC4287" class="cite xref">RFC4287</a>]</span>; see also <span><a href="https://rfc-editor.org/rfc/rfc8288#appendix-A.2" class="relref">Appendix A.2</a> of [<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.3-4">Note that registered relation type names are required to be lowercase
-ASCII letters (see <span><a href="https://rfc-editor.org/rfc/rfc8288#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC8288" class="xref">RFC8288</a>]</span>).<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+ASCII letters (see <span><a href="https://rfc-editor.org/rfc/rfc8288#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>).<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="expressing-simple-rdf-statements">
@@ -2735,15 +2757,15 @@ ASCII letters (see <span><a href="https://rfc-editor.org/rfc/rfc8288#section-3.3
         <h3 id="name-expressing-simple-rdf-state">
 <a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-expressing-simple-rdf-state" class="section-name selfRef">Expressing Simple RDF Statements</a>
         </h3>
-<p id="section-5.4-1">In <span><a href="#W3C.REC-rdf11-concepts-20140225" class="xref">RDF</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="xref">W3C.REC-rdf11-concepts-20140225</a>]</span>, a statement
+<p id="section-5.4-1">In <span><a href="#W3C.REC-rdf11-concepts-20140225" class="internal xref">RDF</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="cite xref">W3C.REC-rdf11-concepts-20140225</a>]</span>, a statement
 says that some relationship, indicated by a predicate, holds between
 two resources. Existing RDF vocabularies can therefore be a good source
 for link relation types that describe resource metadata.
-For example, a CoRAL document could use the <span><a href="#FOAF" class="xref">FOAF vocabulary</a> [<a href="#FOAF" class="xref">FOAF</a>]</span> to describe the person or software that made it:<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+For example, a CoRAL document could use the <span><a href="#FOAF" class="internal xref">FOAF vocabulary</a> [<a href="#FOAF" class="cite xref">FOAF</a>]</span> to describe the person or software that made it:<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5.4-2.1">
-            <div id="section-5.4-2.1.1">
-<pre class="lang-coral sourcecode">
+            <div class="lang-coral sourcecode" id="section-5.4-2.1.1">
+<pre>
 #using rdf = &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
 #using foaf = &lt;http://xmlns.com/foaf/0.1/&gt;
 
@@ -2764,12 +2786,12 @@ foaf:maker null {
         <h3 id="name-expressing-natural-language">
 <a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-expressing-natural-language" class="section-name selfRef">Expressing Natural Language Texts</a>
         </h3>
-<p id="section-5.5-1">Text strings can be associated with a <span><a href="#RFC5646" class="xref">Language Tag</a> [<a href="#RFC5646" class="xref">RFC5646</a>]</span> and a base text direction
+<p id="section-5.5-1">Text strings can be associated with a <span><a href="#RFC5646" class="internal xref">Language Tag</a> [<a href="#RFC5646" class="cite xref">RFC5646</a>]</span> and a base text direction
 (right-to-left or left-to-right) by using CBOR tag 38.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5.5-2.1">
-            <div id="section-5.5-2.1.1">
-<pre class="lang-coral sourcecode">
+            <div class="lang-coral sourcecode" id="section-5.5-2.1.1">
+<pre>
 #using base = &lt;http://coreapps.org/base#&gt;
 #using iana = &lt;http://www.iana.org/assignments/relation/&gt;
 
@@ -2800,8 +2822,8 @@ embed representations of resources.<a href="#section-5.6-1" class="pilcrow">¶</
 type &lt;http://coreapps.org/base#representation&gt;:<a href="#section-5.6-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5.6-3.1">
-            <div id="section-5.6-3.1.1">
-<pre class="lang-coral sourcecode">
+            <div class="lang-coral sourcecode" id="section-5.6-3.1.1">
+<pre>
 #using base = &lt;http://coreapps.org/base#&gt;
 #using http = &lt;http://coreapps.org/http#&gt;
 #using iana = &lt;http://www.iana.org/assignments/relation/&gt;
@@ -2823,7 +2845,7 @@ of the representation.<a href="#section-5.6-4" class="pilcrow">¶</a></p>
 <p id="section-5.6-5">The link relation types
 &lt;http://coreapps.org/base#representation&gt;,
 &lt;http://coreapps.org/http#type&gt;, and
-&lt;http://coreapps.org/coap#type&gt; are defined in <a href="#core-vocabulary" class="xref">Appendix A</a>.<a href="#section-5.6-5" class="pilcrow">¶</a></p>
+&lt;http://coreapps.org/coap#type&gt; are defined in <a href="#core-vocabulary" class="auto internal xref">Appendix A</a>.<a href="#section-5.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2843,17 +2865,17 @@ mitigate these attacks.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">CoRAL serialization formats intentionally do not feature the equivalent
 of XML entity references so as to preclude the entire class of attacks
 relating to them, such as exponential XML entity expansion ("billion
-laughs") <span>[<a href="#CAPEC-197" class="xref">CAPEC-197</a>]</span> and malicious XML entity linking <span>[<a href="#CAPEC-201" class="xref">CAPEC-201</a>]</span>.<a href="#section-6-2" class="pilcrow">¶</a></p>
+laughs") <span>[<a href="#CAPEC-197" class="cite xref">CAPEC-197</a>]</span> and malicious XML entity linking <span>[<a href="#CAPEC-201" class="cite xref">CAPEC-201</a>]</span>.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">Implementers of the CoRAL binary format need to consider the security
-aspects of decoding CBOR. See <span><a href="https://rfc-editor.org/rfc/rfc8949#section-10" class="relref">Section 10</a> of [<a href="#RFC8949" class="xref">RFC8949</a>]</span> for security
+aspects of decoding CBOR. See <span><a href="https://rfc-editor.org/rfc/rfc8949#section-10" class="relref">Section 10</a> of [<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> for security
 considerations relating to CBOR.
 In particular, different number encodings for the same numeric value
 are not equivalent in CoRAL (e.g., a floating-point value of 0.0 is
 not the same as the integer 0).<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">CoRAL makes extensive use of resource identifiers.
-See <span><a href="https://rfc-editor.org/rfc/rfc3986#section-7" class="relref">Section 7</a> of [<a href="#RFC3986" class="xref">RFC3986</a>]</span> for security considerations relating to
+See <span><a href="https://rfc-editor.org/rfc/rfc3986#section-7" class="relref">Section 7</a> of [<a href="#RFC3986" class="cite xref">RFC3986</a>]</span> for security considerations relating to
 URIs.
-See <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-10#section-7" class="relref">Section 7</a> of [<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span> for security considerations
+See <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-14#section-7" class="relref">Section 7</a> of [<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span> for security considerations
 relating to CRIs.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">The security of applications using CoRAL can depend on the proper
 preparation and comparison of internationalized strings. For example,
@@ -2861,32 +2883,32 @@ such strings can be used to make authentication and authorization
 decisions, and the security of an application could be compromised if an
 entity providing a given string is connected to the wrong account or
 online resource based on different interpretations of the string.
-See <span>[<a href="#RFC6943" class="xref">RFC6943</a>]</span> for security considerations relating to identifiers in
+See <span>[<a href="#RFC6943" class="cite xref">RFC6943</a>]</span> for security considerations relating to identifiers in
 URIs and other strings.<a href="#section-6-5" class="pilcrow">¶</a></p>
 <p id="section-6-6">CoRAL is intended to be used in conjunction with a Web transfer protocol
-like HTTP or CoAP. See <span><a href="https://rfc-editor.org/rfc/rfc7230#section-9" class="relref">Section 9</a> of [<a href="#RFC7230" class="xref">RFC7230</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc7231#section-9" class="relref">Section 9</a> of [<a href="#RFC7231" class="xref">RFC7231</a>]</span>, etc.,
+like HTTP or CoAP. See <span><a href="https://rfc-editor.org/rfc/rfc7230#section-9" class="relref">Section 9</a> of [<a href="#RFC7230" class="cite xref">RFC7230</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc7231#section-9" class="relref">Section 9</a> of [<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>, etc.,
 for security considerations relating to HTTP.
-See <span><a href="https://rfc-editor.org/rfc/rfc7252#section-11" class="relref">Section 11</a> of [<a href="#RFC7252" class="xref">RFC7252</a>]</span> for security considerations relating to
+See <span><a href="https://rfc-editor.org/rfc/rfc7252#section-11" class="relref">Section 11</a> of [<a href="#RFC7252" class="cite xref">RFC7252</a>]</span> for security considerations relating to
 CoAP.<a href="#section-6-6" class="pilcrow">¶</a></p>
 <p id="section-6-7">CoRAL does not define any specific mechanisms for protecting the
 confidentiality and integrity of CoRAL documents.
 It relies on security mechanisms on the application layer or transport
-layer for this, such as <span><a href="#RFC8446" class="xref">Transport Layer Security (TLS)</a> [<a href="#RFC8446" class="xref">RFC8446</a>]</span>.<a href="#section-6-7" class="pilcrow">¶</a></p>
+layer for this, such as <span><a href="#RFC8446" class="internal xref">Transport Layer Security (TLS)</a> [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>.<a href="#section-6-7" class="pilcrow">¶</a></p>
 <p id="section-6-8">CoRAL documents and the structure of a web of resources revealed from
 automatically following links can disclose personal information and
 other sensitive information.
 Implementations need to prevent the unintentional disclosure of such
 information.
-See <span><a href="https://rfc-editor.org/rfc/rfc7231#section-9" class="relref">Section 9</a> of [<a href="#RFC7231" class="xref">RFC7231</a>]</span> for additional considerations.<a href="#section-6-8" class="pilcrow">¶</a></p>
+See <span><a href="https://rfc-editor.org/rfc/rfc7231#section-9" class="relref">Section 9</a> of [<a href="#RFC7231" class="cite xref">RFC7231</a>]</span> for additional considerations.<a href="#section-6-8" class="pilcrow">¶</a></p>
 <p id="section-6-9">Applications using CoRAL ought to consider the attack vectors opened by
 automatically following, trusting, or otherwise using links and forms in
-CoRAL documents. See <span><a href="https://rfc-editor.org/rfc/rfc8288#section-5" class="relref">Section 5</a> of [<a href="#RFC8288" class="xref">RFC8288</a>]</span> for related considerations.<a href="#section-6-9" class="pilcrow">¶</a></p>
+CoRAL documents. See <span><a href="https://rfc-editor.org/rfc/rfc8288#section-5" class="relref">Section 5</a> of [<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> for related considerations.<a href="#section-6-9" class="pilcrow">¶</a></p>
 <p id="section-6-10">In particular, when a CoRAL document is the representation of a
 resource, the server that is authoritative for that resource may not
 necessarily be authoritative for nested elements in the document. In
 this case, unless an application defines specific rules, any link or
 form where the link/form context and the document's retrieval context do
-not share the same <span><a href="#RFC6454" class="xref">Web Origin</a> [<a href="#RFC6454" class="xref">RFC6454</a>]</span> should be
+not share the same <span><a href="#RFC6454" class="internal xref">Web Origin</a> [<a href="#RFC6454" class="cite xref">RFC6454</a>]</span> should be
 discarded ("same-origin policy").<a href="#section-6-10" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2900,7 +2922,7 @@ discarded ("same-origin policy").<a href="#section-6-10" class="pilcrow">¶</a><
         <h3 id="name-media-type-application-cora">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-media-type-application-cora" class="section-name selfRef">Media Type "application/coral+cbor"</a>
         </h3>
-<p id="section-7.1-1">This document registers the media type <code>application/coral+cbor</code> according to the procedures of <span>[<a href="#RFC6838" class="xref">RFC6838</a>]</span>.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">This document registers the media type <code>application/coral+cbor</code> according to the procedures of <span>[<a href="#RFC6838" class="cite xref">RFC6838</a>]</span>.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlNewline" id="section-7.1-2">
           <dt id="section-7.1-2.1">Type name:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.2">
@@ -2919,17 +2941,17 @@ discarded ("same-origin policy").<a href="#section-6-10" class="pilcrow">¶</a><
           <dd class="break"></dd>
 <dt id="section-7.1-2.7">Optional parameters:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.8">
-            <p id="section-7.1-2.8.1">dictionary - See <a href="#dictionary-compression" class="xref">Section 3.2</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.8.1">dictionary - See <a href="#dictionary-compression" class="auto internal xref">Section 3.2</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.8.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-7.1-2.9">Encoding considerations:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.10">
-            <p id="section-7.1-2.10.1">binary - See <a href="#binary" class="xref">Section 3</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.10.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.10.1">binary - See <a href="#binary" class="auto internal xref">Section 3</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.10.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-7.1-2.11">Security considerations:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.12">
-            <p id="section-7.1-2.12.1">See <a href="#security" class="xref">Section 6</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.12.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.12.1">See <a href="#security" class="auto internal xref">Section 6</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.12.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-7.1-2.13">Interoperability considerations:</dt>
@@ -2944,7 +2966,7 @@ discarded ("same-origin policy").<a href="#section-6-10" class="pilcrow">¶</a><
           <dd class="break"></dd>
 <dt id="section-7.1-2.17">Applications that use this media type:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.18">
-            <p id="section-7.1-2.18.1">See <a href="#introduction" class="xref">Section 1</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.18.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.18.1">See <a href="#introduction" class="auto internal xref">Section 1</a> of [I-D.ietf-core-coral].<a href="#section-7.1-2.18.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-7.1-2.19">Fragment identifier considerations:</dt>
@@ -3017,7 +3039,7 @@ discarded ("same-origin policy").<a href="#section-6-10" class="pilcrow">¶</a><
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-coap-content-formats" class="section-name selfRef">CoAP Content Formats</a>
         </h3>
 <p id="section-7.2-1">This document registers CoAP content formats for the content types <code>application/coral+cbor</code> and <code>text/coral</code> according to the procedures
-of <span>[<a href="#RFC7252" class="xref">RFC7252</a>]</span>.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+of <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.2-2.1">
             <span class="break"></span><dl class="dlCompact dlParallel" id="section-7.2-2.1.1">
@@ -3057,6 +3079,7 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
       <h2 id="name-references">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
 <section id="section-8.1">
         <h3 id="name-normative-references">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
@@ -3064,15 +3087,15 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
 <dl class="references">
 <dt id="I-D.bormann-cbor-edn-literals">[I-D.bormann-cbor-edn-literals]</dt>
         <dd>
-<span class="refAuthor">Bormann, C.</span>, <span class="refTitle">"Application-Oriented Literals in CBOR Extended Diagnostic Notation"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bormann-cbor-edn-literals-00</span>, <time datetime="2021-10-06" class="refDate">6 October 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bormann-cbor-edn-literals-00">https://datatracker.ietf.org/doc/html/draft-bormann-cbor-edn-literals-00</a>&gt;</span>. </dd>
+<span class="refAuthor">Bormann, C.</span>, <span class="refTitle">"Application-Oriented Literals in CBOR Extended Diagnostic Notation"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bormann-cbor-edn-literals-02</span>, <time datetime="2023-03-28" class="refDate">28 March 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bormann-cbor-edn-literals-02">https://datatracker.ietf.org/doc/html/draft-bormann-cbor-edn-literals-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-cbor-packed">[I-D.ietf-cbor-packed]</dt>
         <dd>
-<span class="refAuthor">Bormann, C.</span>, <span class="refTitle">"Packed CBOR"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cbor-packed-07</span>, <time datetime="2022-07-24" class="refDate">24 July 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-07">https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-07</a>&gt;</span>. </dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">M. Gütschow</span>, <span class="refTitle">"Packed CBOR"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cbor-packed-12</span>, <time datetime="2024-03-02" class="refDate">2 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-12">https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-12</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-core-href">[I-D.ietf-core-href]</dt>
         <dd>
-<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Constrained Resource Identifiers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-core-href-10</span>, <time datetime="2022-03-07" class="refDate">7 March 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-10">https://datatracker.ietf.org/doc/html/draft-ietf-core-href-10</a>&gt;</span>. </dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Constrained Resource Identifiers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-core-href-14</span>, <time datetime="2024-01-09" class="refDate">9 January 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-core-href-14">https://datatracker.ietf.org/doc/html/draft-ietf-core-href-14</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -3132,6 +3155,8 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
 <dd class="break"></dd>
 </dl>
 </section>
+</div>
+<div id="sec-informative-references">
 <section id="section-8.2">
         <h3 id="name-informative-references">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
@@ -3147,7 +3172,7 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
 <dd class="break"></dd>
 <dt id="CORE-PARAMETERS">[CORE-PARAMETERS]</dt>
         <dd>
-<span class="refAuthor">IANA</span>, <span class="refTitle">"Constrained RESTful Environments (CoRE) Parameters"</span>, <span>&lt;<a href="https://www.iana.org/assignments/core-parameters">https://www.iana.org/assignments/core-parameters</a>&gt;</span>. </dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Constrained RESTful Environments (CoRE) Parameters"</span>, <span>&lt;<a href="http://www.iana.org/assignments/core-parameters">http://www.iana.org/assignments/core-parameters</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FOAF">[FOAF]</dt>
         <dd>
@@ -3155,23 +3180,23 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
 <dd class="break"></dd>
 <dt id="HAL">[HAL]</dt>
         <dd>
-<span class="refAuthor">Kelly, M.</span>, <span class="refTitle">"JSON Hypertext Application Language"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-kelly-json-hal-08</span>, <time datetime="2016-05-12" class="refDate">12 May 2016</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-08">https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-08</a>&gt;</span>. </dd>
+<span class="refAuthor">Kelly, M.</span>, <span class="refTitle">"JSON Hypertext Application Language"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-kelly-json-hal-11</span>, <time datetime="2023-10-19" class="refDate">19 October 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-11">https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-11</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="HTTP-METHODS">[HTTP-METHODS]</dt>
         <dd>
-<span class="refAuthor">IANA</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP) Method Registry"</span>, <span>&lt;<a href="https://www.iana.org/assignments/http-methods">https://www.iana.org/assignments/http-methods</a>&gt;</span>. </dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP) Method Registry"</span>, <span>&lt;<a href="http://www.iana.org/assignments/http-methods">http://www.iana.org/assignments/http-methods</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-httpapi-linkset">[I-D.ietf-httpapi-linkset]</dt>
         <dd>
-<span class="refAuthor">Wilde, E.</span> and <span class="refAuthor">H. V. D. Sompel</span>, <span class="refTitle">"Linkset: Media Types and a Link Relation Type for Link Sets"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpapi-linkset-10</span>, <time datetime="2022-05-05" class="refDate">5 May 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-linkset-10">https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-linkset-10</a>&gt;</span>. </dd>
+<span class="refAuthor">Wilde, E.</span> and <span class="refAuthor">H. Van de Sompel</span>, <span class="refTitle">"Linkset: Media Types and a Link Relation Type for Link Sets"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpapi-linkset-10</span>, <time datetime="2022-05-05" class="refDate">5 May 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-linkset-10">https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-linkset-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="LINK-RELATIONS">[LINK-RELATIONS]</dt>
         <dd>
-<span class="refAuthor">IANA</span>, <span class="refTitle">"Link Relations"</span>, <span>&lt;<a href="https://www.iana.org/assignments/link-relations">https://www.iana.org/assignments/link-relations</a>&gt;</span>. </dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Link Relations"</span>, <span>&lt;<a href="http://www.iana.org/assignments/link-relations">http://www.iana.org/assignments/link-relations</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MEDIA-TYPES">[MEDIA-TYPES]</dt>
         <dd>
-<span class="refAuthor">IANA</span>, <span class="refTitle">"Media Types"</span>, <span>&lt;<a href="https://www.iana.org/assignments/media-types">https://www.iana.org/assignments/media-types</a>&gt;</span>. </dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Media Types"</span>, <span>&lt;<a href="http://www.iana.org/assignments/media-types">http://www.iana.org/assignments/media-types</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4287">[RFC4287]</dt>
         <dd>
@@ -3243,26 +3268,27 @@ until IANA has assigned code points.]]<a href="#section-7.2-4" class="pilcrow">�
 <dd class="break"></dd>
 <dt id="W3C.REC-html52-20171214">[W3C.REC-html52-20171214]</dt>
         <dd>
-<span class="refAuthor">Faulkner, S.</span>, <span class="refAuthor">Eicholz, A.</span>, <span class="refAuthor">Leithead, T.</span>, <span class="refAuthor">Danilo, A.</span>, and <span class="refAuthor">S. Moon</span>, <span class="refTitle">"HTML 5.2"</span>, <span class="seriesInfo">World Wide Web Consortium Recommendation REC-html52-20171214</span>, <time datetime="2017-12-14" class="refDate">14 December 2017</time>, <span>&lt;<a href="https://www.w3.org/TR/2017/REC-html52-20171214">https://www.w3.org/TR/2017/REC-html52-20171214</a>&gt;</span>. </dd>
+<span class="refAuthor">Danilo, A., Ed.</span>, <span class="refAuthor">Eicholz, A., Ed.</span>, <span class="refAuthor">Moon, S., Ed.</span>, <span class="refAuthor">Faulkner, S., Ed.</span>, and <span class="refAuthor">T. Leithead, Ed.</span>, <span class="refTitle">"HTML 5.2"</span>, <span class="seriesInfo">W3C REC REC-html52-20171214</span>, <span class="seriesInfo">W3C REC-html52-20171214</span>, <time datetime="2017-12-14" class="refDate">14 December 2017</time>, <span>&lt;<a href="https://www.w3.org/TR/2017/REC-html52-20171214/">https://www.w3.org/TR/2017/REC-html52-20171214/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="W3C.REC-rdf-schema-20140225">[W3C.REC-rdf-schema-20140225]</dt>
         <dd>
-<span class="refAuthor">Brickley, D.</span> and <span class="refAuthor">R. Guha</span>, <span class="refTitle">"RDF Schema 1.1"</span>, <span class="seriesInfo">World Wide Web Consortium Recommendation REC-rdf-schema-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-rdf-schema-20140225">https://www.w3.org/TR/2014/REC-rdf-schema-20140225</a>&gt;</span>. </dd>
+<span class="refAuthor">Brickley, D., Ed.</span> and <span class="refAuthor">R. Guha, Ed.</span>, <span class="refTitle">"RDF Schema 1.1"</span>, <span class="seriesInfo">W3C REC REC-rdf-schema-20140225</span>, <span class="seriesInfo">W3C REC-rdf-schema-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-rdf-schema-20140225/">https://www.w3.org/TR/2014/REC-rdf-schema-20140225/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="W3C.REC-rdf11-concepts-20140225">[W3C.REC-rdf11-concepts-20140225]</dt>
         <dd>
-<span class="refAuthor">Cyganiak, R.</span>, <span class="refAuthor">Wood, D.</span>, and <span class="refAuthor">M. Lanthaler</span>, <span class="refTitle">"RDF 1.1 Concepts and Abstract Syntax"</span>, <span class="seriesInfo">World Wide Web Consortium Recommendation REC-rdf11-concepts-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225">https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225</a>&gt;</span>. </dd>
+<span class="refAuthor">Wood, D., Ed.</span>, <span class="refAuthor">Lanthaler, M., Ed.</span>, and <span class="refAuthor">R. Cyganiak, Ed.</span>, <span class="refTitle">"RDF 1.1 Concepts and Abstract Syntax"</span>, <span class="seriesInfo">W3C REC REC-rdf11-concepts-20140225</span>, <span class="seriesInfo">W3C REC-rdf11-concepts-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/">https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="W3C.REC-turtle-20140225">[W3C.REC-turtle-20140225]</dt>
         <dd>
-<span class="refAuthor">Prud&amp;#039;hommeaux, E.</span> and <span class="refAuthor">G. Carothers</span>, <span class="refTitle">"RDF 1.1 Turtle"</span>, <span class="seriesInfo">World Wide Web Consortium Recommendation REC-turtle-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-turtle-20140225">https://www.w3.org/TR/2014/REC-turtle-20140225</a>&gt;</span>. </dd>
+<span class="refAuthor">Prud'hommeaux, E., Ed.</span> and <span class="refAuthor">G. Carothers, Ed.</span>, <span class="refTitle">"RDF 1.1 Turtle"</span>, <span class="seriesInfo">W3C REC REC-turtle-20140225</span>, <span class="seriesInfo">W3C REC-turtle-20140225</span>, <time datetime="2014-02-25" class="refDate">25 February 2014</time>, <span>&lt;<a href="https://www.w3.org/TR/2014/REC-turtle-20140225/">https://www.w3.org/TR/2014/REC-turtle-20140225/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="W3C.REC-webarch-20041215">[W3C.REC-webarch-20041215]</dt>
       <dd>
-<span class="refAuthor">Jacobs, I.</span> and <span class="refAuthor">N. Walsh</span>, <span class="refTitle">"Architecture of the World Wide Web, Volume One"</span>, <span class="seriesInfo">World Wide Web Consortium Recommendation REC-webarch-20041215</span>, <time datetime="2004-12-15" class="refDate">15 December 2004</time>, <span>&lt;<a href="https://www.w3.org/TR/2004/REC-webarch-20041215">https://www.w3.org/TR/2004/REC-webarch-20041215</a>&gt;</span>. </dd>
+<span class="refAuthor">Jacobs, I., Ed.</span> and <span class="refAuthor">N. Walsh, Ed.</span>, <span class="refTitle">"Architecture of the World Wide Web, Volume One"</span>, <span class="seriesInfo">W3C REC REC-webarch-20041215</span>, <span class="seriesInfo">W3C REC-webarch-20041215</span>, <time datetime="2004-12-15" class="refDate">15 December 2004</time>, <span>&lt;<a href="https://www.w3.org/TR/2004/REC-webarch-20041215/">https://www.w3.org/TR/2004/REC-webarch-20041215/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
+</div>
 </section>
 <div id="core-vocabulary">
 <section id="appendix-A">
@@ -3281,8 +3307,8 @@ relation types, operation types, and form field types.<a href="#appendix-A-1" cl
           <dt id="appendix-A.1-2.1">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt;</dt>
           <dd style="margin-left: 1.5em" id="appendix-A.1-2.2">
             <p id="appendix-A.1-2.2.1">Indicates that the link's context is an instance of the class
-specified as the link's target, as defined by <span><a href="#W3C.REC-rdf-schema-20140225" class="xref">RDF
-Schema</a> [<a href="#W3C.REC-rdf-schema-20140225" class="xref">W3C.REC-rdf-schema-20140225</a>]</span>.<a href="#appendix-A.1-2.2.1" class="pilcrow">¶</a></p>
+specified as the link's target, as defined by <span><a href="#W3C.REC-rdf-schema-20140225" class="internal xref">RDF
+Schema</a> [<a href="#W3C.REC-rdf-schema-20140225" class="cite xref">W3C.REC-rdf-schema-20140225</a>]</span>.<a href="#appendix-A.1-2.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="appendix-A.1-2.3">&lt;http://coreapps.org/base#title&gt;</dt>
@@ -3317,19 +3343,19 @@ link.<a href="#appendix-A.1-2.6.4" class="pilcrow">¶</a></p>
             <p id="appendix-A.1-4.2.1">Indicates that the state of the form's context can be replaced
 with the state described by a representation submitted to the
 server.<a href="#appendix-A.1-4.2.1" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-4.2.2">This operation type defaults to the PUT method <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>  <span>[<a href="#RFC7252" class="xref">RFC7252</a>]</span> for both HTTP and
+<p id="appendix-A.1-4.2.2">This operation type defaults to the PUT method <span>[<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>  <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span> for both HTTP and
 CoAP.
-  Typical overrides by a form field include the PATCH method <span>[<a href="#RFC5789" class="xref">RFC5789</a>]</span>  <span>[<a href="#RFC8132" class="xref">RFC8132</a>]</span> for HTTP and CoAP and
-the iPATCH method <span>[<a href="#RFC8132" class="xref">RFC8132</a>]</span> for CoAP.<a href="#appendix-A.1-4.2.2" class="pilcrow">¶</a></p>
+  Typical overrides by a form field include the PATCH method <span>[<a href="#RFC5789" class="cite xref">RFC5789</a>]</span>  <span>[<a href="#RFC8132" class="cite xref">RFC8132</a>]</span> for HTTP and CoAP and
+the iPATCH method <span>[<a href="#RFC8132" class="cite xref">RFC8132</a>]</span> for CoAP.<a href="#appendix-A.1-4.2.2" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="appendix-A.1-4.3">&lt;http://coreapps.org/base#search&gt;</dt>
           <dd style="margin-left: 1.5em" id="appendix-A.1-4.4">
             <p id="appendix-A.1-4.4.1">Indicates that the form's context can be searched by submitting a
 search query.<a href="#appendix-A.1-4.4.1" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-4.4.2">This operation type defaults to the POST method <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span> for HTTP
-and the FETCH method <span>[<a href="#RFC8132" class="xref">RFC8132</a>]</span> for CoAP.
-Typical overrides by a form field include the POST method <span>[<a href="#RFC7252" class="xref">RFC7252</a>]</span>
+<p id="appendix-A.1-4.4.2">This operation type defaults to the POST method <span>[<a href="#RFC7231" class="cite xref">RFC7231</a>]</span> for HTTP
+and the FETCH method <span>[<a href="#RFC8132" class="cite xref">RFC8132</a>]</span> for CoAP.
+Typical overrides by a form field include the POST method <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>
 for CoAP.<a href="#appendix-A.1-4.4.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
@@ -3347,13 +3373,13 @@ for CoAP.<a href="#appendix-A.1-4.4.2" class="pilcrow">¶</a></p>
           <dd style="margin-left: 1.5em" id="appendix-A.2-2.2">
             <p id="appendix-A.2-2.2.1">Indicates that the link's context is a collection and that the
 link's target is a member of that collection, as defined in
-<span><a href="https://rfc-editor.org/rfc/rfc6573#section-2.1" class="relref">Section 2.1</a> of [<a href="#RFC6573" class="xref">RFC6573</a>]</span>.<a href="#appendix-A.2-2.2.1" class="pilcrow">¶</a></p>
+<span><a href="https://rfc-editor.org/rfc/rfc6573#section-2.1" class="relref">Section 2.1</a> of [<a href="#RFC6573" class="cite xref">RFC6573</a>]</span>.<a href="#appendix-A.2-2.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="appendix-A.2-2.3">&lt;http://www.iana.org/assignments/relation/collection&gt;</dt>
           <dd style="margin-left: 1.5em" id="appendix-A.2-2.4">
             <p id="appendix-A.2-2.4.1">Indicates that the link's target is a collection and that the link's
-context is a member of that collection, as defined in <span><a href="https://rfc-editor.org/rfc/rfc6573#section-2.2" class="relref">Section 2.2</a> of [<a href="#RFC6573" class="xref">RFC6573</a>]</span>.<a href="#appendix-A.2-2.4.1" class="pilcrow">¶</a></p>
+context is a member of that collection, as defined in <span><a href="https://rfc-editor.org/rfc/rfc6573#section-2.2" class="relref">Section 2.2</a> of [<a href="#RFC6573" class="cite xref">RFC6573</a>]</span>.<a href="#appendix-A.2-2.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3364,7 +3390,7 @@ context is a member of that collection, as defined in <span><a href="https://rfc
             <p id="appendix-A.2-4.2.1">Indicates that the form's context is a collection and that a new
 item can be created in that collection with the state defined by a
 representation submitted to the server.<a href="#appendix-A.2-4.2.1" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-4.2.2">This operation type defaults to the POST method <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span> <span>[<a href="#RFC7252" class="xref">RFC7252</a>]</span>
+<p id="appendix-A.2-4.2.2">This operation type defaults to the POST method <span>[<a href="#RFC7231" class="cite xref">RFC7231</a>]</span> <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span>
 for both HTTP and CoAP.<a href="#appendix-A.2-4.2.2" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
@@ -3372,8 +3398,8 @@ for both HTTP and CoAP.<a href="#appendix-A.2-4.2.2" class="pilcrow">¶</a></p>
           <dd style="margin-left: 1.5em" id="appendix-A.2-4.4">
             <p id="appendix-A.2-4.4.1">Indicates that the form's context is a member of a collection and
 that the form's context can be removed from that collection.<a href="#appendix-A.2-4.4.1" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-4.4.2">This operation type defaults to the DELETE method <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>
-              <span>[<a href="#RFC7252" class="xref">RFC7252</a>]</span> for both HTTP and CoAP.<a href="#appendix-A.2-4.4.2" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-4.4.2">This operation type defaults to the DELETE method <span>[<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>
+              <span>[<a href="#RFC7252" class="cite xref">RFC7252</a>]</span> for both HTTP and CoAP.<a href="#appendix-A.2-4.4.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3390,9 +3416,9 @@ that the form's context can be removed from that collection.<a href="#appendix-A
           <dd style="margin-left: 1.5em" id="appendix-A.3-2.2">
             <p id="appendix-A.3-2.2.1">Specifies the HTTP method for the request.<a href="#appendix-A.3-2.2.1" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-2.2.2">The form field value <span class="bcp14">MUST</span> be a text string in the format defined
-in <span><a href="https://rfc-editor.org/rfc/rfc7231#section-4.1" class="relref">Section 4.1</a> of [<a href="#RFC7231" class="xref">RFC7231</a>]</span>.
-The possible set of values is maintained in the <span><a href="#HTTP-METHODS" class="xref">HTTP Methods
-Registry</a> [<a href="#HTTP-METHODS" class="xref">HTTP-METHODS</a>]</span>.<a href="#appendix-A.3-2.2.2" class="pilcrow">¶</a></p>
+in <span><a href="https://rfc-editor.org/rfc/rfc7231#section-4.1" class="relref">Section 4.1</a> of [<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>.
+The possible set of values is maintained in the <span><a href="#HTTP-METHODS" class="internal xref">HTTP Methods
+Registry</a> [<a href="#HTTP-METHODS" class="cite xref">HTTP-METHODS</a>]</span>.<a href="#appendix-A.3-2.2.2" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-2.2.3">A form field of this type <span class="bcp14">MUST NOT</span> occur more than once in a form.
 If absent, it defaults to the request method implied by the form's
 operation type.<a href="#appendix-A.3-2.2.3" class="pilcrow">¶</a></p>
@@ -3405,9 +3431,9 @@ There may be multiple form fields of this type. If a form does not
 include a form field of this type, the server accepts any or no
 request payload, depending on the operation type.<a href="#appendix-A.3-2.4.1" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-2.4.2">The form field value <span class="bcp14">MUST</span> be a text string in the format defined
-in <span><a href="https://rfc-editor.org/rfc/rfc7231#section-3.1.1.1" class="relref">Section 3.1.1.1</a> of [<a href="#RFC7231" class="xref">RFC7231</a>]</span>. The
+in <span><a href="https://rfc-editor.org/rfc/rfc7231#section-3.1.1.1" class="relref">Section 3.1.1.1</a> of [<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>. The
 possible set of media types and their parameters is maintained in
-the <span><a href="#MEDIA-TYPES" class="xref">Media Types Registry</a> [<a href="#MEDIA-TYPES" class="xref">MEDIA-TYPES</a>]</span>.<a href="#appendix-A.3-2.4.2" class="pilcrow">¶</a></p>
+the <span><a href="#MEDIA-TYPES" class="internal xref">Media Types Registry</a> [<a href="#MEDIA-TYPES" class="cite xref">MEDIA-TYPES</a>]</span>.<a href="#appendix-A.3-2.4.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3417,9 +3443,9 @@ the <span><a href="#MEDIA-TYPES" class="xref">Media Types Registry</a> [<a href=
           <dd style="margin-left: 1.5em" id="appendix-A.3-4.2">
             <p id="appendix-A.3-4.2.1">Specifies the HTTP content type of the link context.<a href="#appendix-A.3-4.2.1" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-4.2.2">The link target <span class="bcp14">MUST</span> be a text string in the format defined in
-<span><a href="https://rfc-editor.org/rfc/rfc7231#section-3.1.1.1" class="relref">Section 3.1.1.1</a> of [<a href="#RFC7231" class="xref">RFC7231</a>]</span>. The possible set of media types and
-their parameters is maintained in the <span><a href="#MEDIA-TYPES" class="xref">Media Types
-Registry</a> [<a href="#MEDIA-TYPES" class="xref">MEDIA-TYPES</a>]</span>.<a href="#appendix-A.3-4.2.2" class="pilcrow">¶</a></p>
+<span><a href="https://rfc-editor.org/rfc/rfc7231#section-3.1.1.1" class="relref">Section 3.1.1.1</a> of [<a href="#RFC7231" class="cite xref">RFC7231</a>]</span>. The possible set of media types and
+their parameters is maintained in the <span><a href="#MEDIA-TYPES" class="internal xref">Media Types
+Registry</a> [<a href="#MEDIA-TYPES" class="cite xref">MEDIA-TYPES</a>]</span>.<a href="#appendix-A.3-4.2.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3437,8 +3463,8 @@ Registry</a> [<a href="#MEDIA-TYPES" class="xref">MEDIA-TYPES</a>]</span>.<a hre
             <p id="appendix-A.4-2.2.1">Specifies the CoAP method for the request.<a href="#appendix-A.4-2.2.1" class="pilcrow">¶</a></p>
 <p id="appendix-A.4-2.2.2">The form field value <span class="bcp14">MUST</span> be an integer identifying a CoAP method
 (e.g., the integer 2 for the POST method). The possible set of
-values is maintained in the <span><a href="#CORE-PARAMETERS" class="xref">CoAP Method Codes
-Registry</a> [<a href="#CORE-PARAMETERS" class="xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-2.2.2" class="pilcrow">¶</a></p>
+values is maintained in the <span><a href="#CORE-PARAMETERS" class="internal xref">CoAP Method Codes
+Registry</a> [<a href="#CORE-PARAMETERS" class="cite xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-2.2.2" class="pilcrow">¶</a></p>
 <p id="appendix-A.4-2.2.3">A form field of this type <span class="bcp14">MUST NOT</span> occur more than once in a form.
 If absent, it defaults to the request method implied by the form's
 operation type.<a href="#appendix-A.4-2.2.3" class="pilcrow">¶</a></p>
@@ -3452,8 +3478,8 @@ does not include a form field of this type, the server accepts any
 or no request payload, depending on the operation type.<a href="#appendix-A.4-2.4.1" class="pilcrow">¶</a></p>
 <p id="appendix-A.4-2.4.2">The form field value <span class="bcp14">MUST</span> be an integer identifying a CoAP content
 format.
-The possible set of values is maintained in the CoAP <span><a href="#CORE-PARAMETERS" class="xref">Content
-Formats Registry</a> [<a href="#CORE-PARAMETERS" class="xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-2.4.2" class="pilcrow">¶</a></p>
+The possible set of values is maintained in the CoAP <span><a href="#CORE-PARAMETERS" class="internal xref">Content
+Formats Registry</a> [<a href="#CORE-PARAMETERS" class="cite xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-2.4.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3465,8 +3491,8 @@ Formats Registry</a> [<a href="#CORE-PARAMETERS" class="xref">CORE-PARAMETERS</a
 <p id="appendix-A.4-4.2.2">The link target <span class="bcp14">MUST</span> be an integer identifying a CoAP content format
 (e.g., the integer 42 for the content type
 <code>application/octet-stream</code> without a content coding).
-The possible set of values is maintained in the <span><a href="#CORE-PARAMETERS" class="xref">CoAP Content
-Formats Registry</a> [<a href="#CORE-PARAMETERS" class="xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-4.2.2" class="pilcrow">¶</a></p>
+The possible set of values is maintained in the <span><a href="#CORE-PARAMETERS" class="internal xref">CoAP Content
+Formats Registry</a> [<a href="#CORE-PARAMETERS" class="cite xref">CORE-PARAMETERS</a>]</span>.<a href="#appendix-A.4-4.2.2" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3565,13 +3591,14 @@ as long as some basic restrictions are met:<a href="#appendix-C.1-2" class="pilc
             <p id="appendix-C.1-3.1.1">All involved IRIs (on the RDF side) and CRIs (on the CoRAL side) can be converted;
 that means that round-tripping IRIs through CoRAL converts them to the equivalent URIs.<a href="#appendix-C.1-3.1.1" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-3.1.2">
-The precise limitations of what CRIs can not express are described in <span>[<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span> and out of scope of this document.<a href="#appendix-C.1-3.1.2" class="pilcrow">¶</a></p>
+The precise limitations of what CRIs can not express are described in <span>[<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span> and out of scope of this document.<a href="#appendix-C.1-3.1.2" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-3.1.3">
 A possible extension to CoRAL that allows tagged URIs in place of CRIs could remove this limitation.
 (CRIs that can not be expressed as URIs are not valid anyway).<a href="#appendix-C.1-3.1.3" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-3.2">A blank node of CoRAL can only have one incoming edge in serialization.
-RDF documents with multiply connected blank nodes need to undergo skolemization before they can be expressed in CoRAL.<a href="#appendix-C.1-3.2" class="pilcrow">¶</a>
+          <li class="normal" id="appendix-C.1-3.2">
+            <p id="appendix-C.1-3.2.1">A blank node of CoRAL can only have one incoming edge in serialization.
+RDF documents with multiply connected blank nodes need to undergo skolemization before they can be expressed in CoRAL.<a href="#appendix-C.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-C.1-3.3">
             <p id="appendix-C.1-3.3.1">CoRAL supports arbitrary literal objects, including CBOR tags.
@@ -3581,20 +3608,23 @@ When literals are normalized in RDF according to XSD rules,
 or the literal mappings to RDF datatypes are ambiguous on the CoRAL side,
 round-tripping CoRAL through RDF can be lossy to the extent of the normalization or ambiguity.<a href="#appendix-C.1-3.3.2" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-3.4">As always with expressing arbitrary graphs of the Basic Information Model in serialization,
+          <li class="normal" id="appendix-C.1-3.4">
+            <p id="appendix-C.1-3.4.1">As always with expressing arbitrary graphs of the Basic Information Model in serialization,
 if there is no directed tree spanning the directed graph,
-statements need to be introduced to reach some topics.<a href="#appendix-C.1-3.4" class="pilcrow">¶</a>
+statements need to be introduced to reach some topics.<a href="#appendix-C.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="appendix-C.1-4">Each statement in RDF is mapped to a statement in CoRAL.
 Any IRI it contains in RDF is mapped to an equivalent CRI in CoRAL and vice versa.
 Any blank node of RDF is converted to a blank node (serialized as a null) in CoRAL.
-(Beware that depending on the context established in <a href="#docsemantics" class="xref">Section 4</a>, the retrieval context may be a URI or a blank node).
+(Beware that depending on the context established in <a href="#docsemantics" class="auto internal xref">Section 4</a>, the retrieval context may be a URI or a blank node).
 Literals are converted as follows:<a href="#appendix-C.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-5.1">CBOR text strings are coverted to RDF string literals without a language tag.<a href="#appendix-C.1-5.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-C.1-5.1">
+            <p id="appendix-C.1-5.1.1">CBOR text strings are coverted to RDF string literals without a language tag.<a href="#appendix-C.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-5.2">CBOR literals from the following list are converted to their corresponding text representations of the datatype from the following table:<a href="#appendix-C.1-5.2" class="pilcrow">¶</a>
+          <li class="normal" id="appendix-C.1-5.2">
+            <p id="appendix-C.1-5.2.1">CBOR literals from the following list are converted to their corresponding text representations of the datatype from the following table:<a href="#appendix-C.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <span id="name-mapping-between-cddl-types-"></span><div id="cddl-xsd-mappings">
@@ -3648,7 +3678,8 @@ Literals are converted as follows:<a href="#appendix-C.1-4" class="pilcrow">¶</
 <p id="appendix-C.1-7">[ TBD: Check compatibilities, give type for at least the basic tags.
    Directional text might wind up in tag 38, ]<a href="#appendix-C.1-7" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-8.1">RDF literals are mapped to any CoRAL literal that yields an equivalent RDF literal in the opposite direction.<a href="#appendix-C.1-8.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-C.1-8.1">
+            <p id="appendix-C.1-8.1.1">RDF literals are mapped to any CoRAL literal that yields an equivalent RDF literal in the opposite direction.<a href="#appendix-C.1-8.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <div id="example">
@@ -3674,7 +3705,7 @@ Literals are converted as follows:<a href="#appendix-C.1-4" class="pilcrow">¶</
             </figcaption></figure>
 </div>
 <p id="appendix-C.1.1-3">Converted, assuming no particular profiling or dictionary setup
-(and an ad-hoc table following <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-07#section-3.1" class="relref">Section 3.1</a> of [<a href="#I-D.ietf-cbor-packed" class="xref">I-D.ietf-cbor-packed</a>]</span>),
+(and an ad-hoc table following <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-cbor-packed-12#section-3.1" class="relref">Section 3.1</a> of [<a href="#I-D.ietf-cbor-packed" class="cite xref">I-D.ietf-cbor-packed</a>]</span>),
 this could be:<a href="#appendix-C.1.1-3" class="pilcrow">¶</a></p>
 <span id="name-serialized-foaf-file-at-htt"></span><div id="fig-foaf-converted">
 <figure id="figure-6">
@@ -3712,21 +3743,21 @@ and is likely to be replaced by better mechanisms in later revisions of this doc
         <h3 id="name-core-link-format">
 <a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-core-link-format" class="section-name selfRef">CoRE Link Format</a>
         </h3>
-<p id="appendix-C.2-1">Generic information in Web Links as described in <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span> can not be converted to CoRAL in any practical way:
+<p id="appendix-C.2-1">Generic information in Web Links as described in <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> can not be converted to CoRAL in any practical way:
 Attributes are not managed,
 and it is not clear from the syntax whether an attribute is making a statement about the link or its target.
-(See <a href="#literalexample" class="xref">Section 2.3.3.1</a> for an example).<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
+(See <a href="#literalexample" class="auto internal xref">Section 2.3.3.1</a> for an example).<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.2-2">Applications that use links with the attribute semantics common in the CoRE ecosystem
-(typically used with <span>[<a href="#RFC6690" class="xref">RFC6690</a>]</span> Link Format)
+(typically used with <span>[<a href="#RFC6690" class="cite xref">RFC6690</a>]</span> Link Format)
 can use this conversion.
 It defines terms for common properties used for discovering resources,
 and describes a way to compatibly extend the mapping.<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
 <p id="appendix-C.2-3">The same mechanism
 (but probably with a different mapping between names and attributes,
 and different rules about the necessity of packing entries)
-can be defined for any data model that builds on <span>[<a href="#RFC8288" class="xref">RFC8288</a>]</span> semantics,
-e.g., the links sent in headers or payloads about <span>[<a href="#RFC7089" class="xref">RFC7089</a>]</span> mementos,
-or applications building on <span>[<a href="#I-D.ietf-httpapi-linkset" class="xref">I-D.ietf-httpapi-linkset</a>]</span>.<a href="#appendix-C.2-3" class="pilcrow">¶</a></p>
+can be defined for any data model that builds on <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span> semantics,
+e.g., the links sent in headers or payloads about <span>[<a href="#RFC7089" class="cite xref">RFC7089</a>]</span> mementos,
+or applications building on <span>[<a href="#I-D.ietf-httpapi-linkset" class="cite xref">I-D.ietf-httpapi-linkset</a>]</span>.<a href="#appendix-C.2-3" class="pilcrow">¶</a></p>
 <p id="appendix-C.2-4">In several points the mapping describes URIs to necessarily have an entry in the packing table;
 this refers to the profiling described further down.
 Parts of a Link Format document that would need an entry but do not have one
@@ -3814,29 +3845,33 @@ Attributes are necessarily listed in this table.<a href="#appendix-C.2-7.1.2" cl
 </div>
 <p id="appendix-C.2-9">Available mechanisms are:<a href="#appendix-C.2-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.2-10.1">SPSP (space split):
+<li class="normal" id="appendix-C.2-10.1">
+            <p id="appendix-C.2-10.1.1">SPSP (space split):
 Link format values are split at space characters (SP in the RFC6690 ABNF),
-and all values treated using another mechanism.<a href="#appendix-C.2-10.1" class="pilcrow">¶</a>
+and all values treated using another mechanism.<a href="#appendix-C.2-10.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-10.2">string:
+          <li class="normal" id="appendix-C.2-10.2">
+            <p id="appendix-C.2-10.2.1">string:
 The attribute value is stored as a text string literal.
 If the Link Format attribute is language tagged
 (i.e. when the attribute name ends with an asterisk and the value is of ext-value shape),
-the literal is encapsulated in a CBOR language tag (38).<a href="#appendix-C.2-10.2" class="pilcrow">¶</a>
+the literal is encapsulated in a CBOR language tag (38).<a href="#appendix-C.2-10.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-10.3">int:
+          <li class="normal" id="appendix-C.2-10.3">
+            <p id="appendix-C.2-10.3.1">int:
 The target attribute is processed as an ASCII encoded number
 and expressed as an integer literal.
 A failing conversion is treated like an unknown registered value:
-It is ignored unless configured otherwise.<a href="#appendix-C.2-10.3" class="pilcrow">¶</a>
+It is ignored unless configured otherwise.<a href="#appendix-C.2-10.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.2-10.4">RPP (registered-prefix / packed):
+          <li class="normal" id="appendix-C.2-10.4">
+            <p id="appendix-C.2-10.4.1">RPP (registered-prefix / packed):
 The input value (often the result of the SPSP mechanism)
 is parsed according to the relation-type ABNF production.
 If it is of ext-rel-type,
 it is expressed as that URI.
 If it is prefixed with the string indicated with the mechanism,
-and necessarily compressed through table TBD.<a href="#appendix-C.2-10.4" class="pilcrow">¶</a>
+and necessarily compressed through table TBD.<a href="#appendix-C.2-10.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="appendix-C.2-11">All currently registered link attributes are used in the CoRE ecosystem
@@ -3879,67 +3914,97 @@ unregistered values would stay <code>[2, 6(/ attr:rt /), value]</code> or maybe 
 <a href="#appendix-D" class="section-number selfRef">Appendix D. </a><a href="#name-change-log" class="section-name selfRef">Change Log</a>
       </h2>
 <p id="appendix-D-1">This section is to be removed before publishing as an RFC.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
-<p id="appendix-D-2">Changes from -04 to -05:<a href="#appendix-D-2" class="pilcrow">¶</a></p>
+<p id="appendix-D-2">Changes from -05 to -06:<a href="#appendix-D-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-D-3.1">Literals can no longer have properties.
-The only use case was annotating languages and directions, and that can be done in CBOR.<a href="#appendix-D-3.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-3.2">Added section about open and close world modelling.<a href="#appendix-D-3.2" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-3.3">Information model merged with the previous data model and interaction section.<a href="#appendix-D-3.3" class="pilcrow">¶</a>
+<li class="normal" id="appendix-D-3.1">
+          <p id="appendix-D-3.1.1">Unmodified resubmission.
+(Recent work is going on in <span>[<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span> and <span>[<a href="#I-D.ietf-cbor-packed" class="cite xref">I-D.ietf-cbor-packed</a>]</span>,
+providing building blocks for CoRAL).<a href="#appendix-D-3.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-D-4">Changes from -03 to -04:<a href="#appendix-D-4" class="pilcrow">¶</a></p>
+<p id="appendix-D-4">Changes from -04 to -05:<a href="#appendix-D-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-D-5.1">Formalize information model, as basic and structured model.<a href="#appendix-D-5.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-D-5.1">
+          <p id="appendix-D-5.1.1">Literals can no longer have properties.
+The only use case was annotating languages and directions, and that can be done in CBOR.<a href="#appendix-D-5.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-5.2">Remove textual representation, using CBOR diagnostig notation instead.<a href="#appendix-D-5.2" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-5.2">
+          <p id="appendix-D-5.2.1">Added section about open and close world modelling.<a href="#appendix-D-5.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-5.3">Use Packed CBOR instead of custom dictionaries.<a href="#appendix-D-5.3" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.4">Give explicit conversions from Link Format and with RDF.<a href="#appendix-D-5.4" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.5">Remove references to IRIs (outside RDF) as CRIs are closer to URIs.<a href="#appendix-D-5.5" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.6">Remove requirement for deterministic encoding.<a href="#appendix-D-5.6" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.7">Many editorial changes.<a href="#appendix-D-5.7" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.8">Update references.<a href="#appendix-D-5.8" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-5.9">Change of authorship.<a href="#appendix-D-5.9" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-5.3">
+          <p id="appendix-D-5.3.1">Information model merged with the previous data model and interaction section.<a href="#appendix-D-5.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-D-6">Changes from -02 to -03:<a href="#appendix-D-6" class="pilcrow">¶</a></p>
+<p id="appendix-D-6">Changes from -03 to -04:<a href="#appendix-D-6" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-D-7.1">Changed the binary format to express relation types, operation types and
-form field types using <span>[<a href="#I-D.ietf-core-href" class="xref">I-D.ietf-core-href</a>]</span> (#2).<a href="#appendix-D-7.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-D-7.1">
+          <p id="appendix-D-7.1.1">Formalize information model, as basic and structured model.<a href="#appendix-D-7.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-7.2">Clarified the current context and current base for nested elements and form
-fields (#53).<a href="#appendix-D-7.2" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-7.2">
+          <p id="appendix-D-7.2.1">Remove textual representation, using CBOR diagnostig notation instead.<a href="#appendix-D-7.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-7.3">Minor editorial improvements (#27).<a href="#appendix-D-7.3" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-7.3">
+          <p id="appendix-D-7.3.1">Use Packed CBOR instead of custom dictionaries.<a href="#appendix-D-7.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.4">
+          <p id="appendix-D-7.4.1">Give explicit conversions from Link Format and with RDF.<a href="#appendix-D-7.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.5">
+          <p id="appendix-D-7.5.1">Remove references to IRIs (outside RDF) as CRIs are closer to URIs.<a href="#appendix-D-7.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.6">
+          <p id="appendix-D-7.6.1">Remove requirement for deterministic encoding.<a href="#appendix-D-7.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.7">
+          <p id="appendix-D-7.7.1">Many editorial changes.<a href="#appendix-D-7.7.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.8">
+          <p id="appendix-D-7.8.1">Update references.<a href="#appendix-D-7.8.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-7.9">
+          <p id="appendix-D-7.9.1">Change of authorship.<a href="#appendix-D-7.9.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-D-8">Changes from -01 to -02:<a href="#appendix-D-8" class="pilcrow">¶</a></p>
+<p id="appendix-D-8">Changes from -02 to -03:<a href="#appendix-D-8" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-D-9.1">Added nested elements to form fields.<a href="#appendix-D-9.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-D-9.1">
+          <p id="appendix-D-9.1.1">Changed the binary format to express relation types, operation types and
+form field types using <span>[<a href="#I-D.ietf-core-href" class="cite xref">I-D.ietf-core-href</a>]</span> (#2).<a href="#appendix-D-9.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-9.2">Replaced the special construct for embedded representations with links.<a href="#appendix-D-9.2" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-9.2">
+          <p id="appendix-D-9.2.1">Clarified the current context and current base for nested elements and form
+fields (#53).<a href="#appendix-D-9.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-9.3">Changed the textual format to allow simple/qualified names wherever IRI references
-are allowed.<a href="#appendix-D-9.3" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-9.4">Introduced predefined names in the textual format (#39).<a href="#appendix-D-9.4" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="appendix-D-9.5">Minor editorial improvements and bug fixes (#16 #28 #31 #37 #39).<a href="#appendix-D-9.5" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-9.3">
+          <p id="appendix-D-9.3.1">Minor editorial improvements (#27).<a href="#appendix-D-9.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-D-10">Changes from -00 to -01:<a href="#appendix-D-10" class="pilcrow">¶</a></p>
+<p id="appendix-D-10">Changes from -01 to -02:<a href="#appendix-D-10" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-D-11.1">Added a section on the semantics of CoRAL documents in responses.<a href="#appendix-D-11.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-D-11.1">
+          <p id="appendix-D-11.1.1">Added nested elements to form fields.<a href="#appendix-D-11.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-D-11.2">Minor editorial improvements.<a href="#appendix-D-11.2" class="pilcrow">¶</a>
+        <li class="normal" id="appendix-D-11.2">
+          <p id="appendix-D-11.2.1">Replaced the special construct for embedded representations with links.<a href="#appendix-D-11.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-11.3">
+          <p id="appendix-D-11.3.1">Changed the textual format to allow simple/qualified names wherever IRI references
+are allowed.<a href="#appendix-D-11.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-11.4">
+          <p id="appendix-D-11.4.1">Introduced predefined names in the textual format (#39).<a href="#appendix-D-11.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-11.5">
+          <p id="appendix-D-11.5.1">Minor editorial improvements and bug fixes (#16 #28 #31 #37 #39).<a href="#appendix-D-11.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="appendix-D-12">Changes from -00 to -01:<a href="#appendix-D-12" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-D-13.1">
+          <p id="appendix-D-13.1.1">Added a section on the semantics of CoRAL documents in responses.<a href="#appendix-D-13.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-D-13.2">
+          <p id="appendix-D-13.2.1">Minor editorial improvements.<a href="#appendix-D-13.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -3950,9 +4015,9 @@ are allowed.<a href="#appendix-D-9.3" class="pilcrow">¶</a>
 <a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
       </h2>
 <p id="appendix-E-1">The concept and original version of CoRAL (as well as CRIs) was developed by Klaus Hartke.
-It was heavily inspired by Mike Kelly's <span><a href="#HAL" class="xref">JSON Hypertext Application Language</a> [<a href="#HAL" class="xref">HAL</a>]</span>.<a href="#appendix-E-1" class="pilcrow">¶</a></p>
-<p id="appendix-E-2">The recommendations for minting URIs have been adopted from <span><a href="#W3C.REC-rdf11-concepts-20140225" class="xref">RDF 1.1
-Concepts and Abstract Syntax</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="xref">W3C.REC-rdf11-concepts-20140225</a>]</span> to
+It was heavily inspired by Mike Kelly's <span><a href="#HAL" class="internal xref">JSON Hypertext Application Language</a> [<a href="#HAL" class="cite xref">HAL</a>]</span>.<a href="#appendix-E-1" class="pilcrow">¶</a></p>
+<p id="appendix-E-2">The recommendations for minting URIs have been adopted from <span><a href="#W3C.REC-rdf11-concepts-20140225" class="internal xref">RDF 1.1
+Concepts and Abstract Syntax</a> [<a href="#W3C.REC-rdf11-concepts-20140225" class="cite xref">W3C.REC-rdf11-concepts-20140225</a>]</span> to
 ease the interoperability between RDF predicates and link relation
 types.<a href="#appendix-E-2" class="pilcrow">¶</a></p>
 <p id="appendix-E-3">Thanks to

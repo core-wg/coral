@@ -5,8 +5,8 @@
 CoRE Working Group                                             C. Amsüss
 Internet-Draft                                                          
 Intended status: Standards Track                              T. Fossati
-Expires: 27 January 2023                                             ARM
-                                                            26 July 2022
+Expires: 5 September 2024                                            ARM
+                                                            4 March 2024
 
 
           The Constrained RESTful Application Language (CoRAL)
@@ -44,11 +44,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 January 2023.
+   This Internet-Draft will expire on 5 September 2024.
 
 Copyright Notice
 
-   Copyright (c) 2022 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1388,22 +1388,22 @@ Table of Contents
    [I-D.bormann-cbor-edn-literals]
               Bormann, C., "Application-Oriented Literals in CBOR
               Extended Diagnostic Notation", Work in Progress, Internet-
-              Draft, draft-bormann-cbor-edn-literals-00, 6 October 2021,
+              Draft, draft-bormann-cbor-edn-literals-02, 28 March 2023,
               <https://datatracker.ietf.org/doc/html/draft-bormann-cbor-
-              edn-literals-00>.
+              edn-literals-02>.
 
    [I-D.ietf-cbor-packed]
-              Bormann, C., "Packed CBOR", Work in Progress, Internet-
-              Draft, draft-ietf-cbor-packed-07, 24 July 2022,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-cbor-
-              packed-07>.
+              Bormann, C. and M. Gütschow, "Packed CBOR", Work in
+              Progress, Internet-Draft, draft-ietf-cbor-packed-12, 2
+              March 2024, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-cbor-packed-12>.
 
    [I-D.ietf-core-href]
               Bormann, C. and H. Birkholz, "Constrained Resource
               Identifiers", Work in Progress, Internet-Draft, draft-
-              ietf-core-href-10, 7 March 2022,
+              ietf-core-href-14, 9 January 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-core-
-              href-10>.
+              href-14>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1482,36 +1482,35 @@ Table of Contents
    [CORE-PARAMETERS]
               IANA, "Constrained RESTful Environments (CoRE)
               Parameters",
-              <https://www.iana.org/assignments/core-parameters>.
+              <http://www.iana.org/assignments/core-parameters>.
 
    [FOAF]     Brickley, D. and L. Miller, "FOAF Vocabulary Specification
               0.99", January 2014,
               <http://xmlns.com/foaf/spec/20140114.html>.
 
    [HAL]      Kelly, M., "JSON Hypertext Application Language", Work in
-              Progress, Internet-Draft, draft-kelly-json-hal-08, 12 May
-              2016, <https://datatracker.ietf.org/doc/html/draft-kelly-
-              json-hal-08>.
+              Progress, Internet-Draft, draft-kelly-json-hal-11, 19
+              October 2023, <https://datatracker.ietf.org/doc/html/
+              draft-kelly-json-hal-11>.
 
    [HTTP-METHODS]
               IANA, "Hypertext Transfer Protocol (HTTP) Method
-              Registry",
-              <https://www.iana.org/assignments/http-methods>.
+              Registry", <http://www.iana.org/assignments/http-methods>.
 
    [I-D.ietf-httpapi-linkset]
-              Wilde, E. and H. V. D. Sompel, "Linkset: Media Types and a
-              Link Relation Type for Link Sets", Work in Progress,
+              Wilde, E. and H. Van de Sompel, "Linkset: Media Types and
+              a Link Relation Type for Link Sets", Work in Progress,
               Internet-Draft, draft-ietf-httpapi-linkset-10, 5 May 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-
               linkset-10>.
 
    [LINK-RELATIONS]
               IANA, "Link Relations",
-              <https://www.iana.org/assignments/link-relations>.
+              <http://www.iana.org/assignments/link-relations>.
 
    [MEDIA-TYPES]
               IANA, "Media Types",
-              <https://www.iana.org/assignments/media-types>.
+              <http://www.iana.org/assignments/media-types>.
 
    [RFC4287]  Nottingham, M., Ed. and R. Sayre, Ed., "The Atom
               Syndication Format", RFC 4287, DOI 10.17487/RFC4287,
@@ -1588,35 +1587,36 @@ Table of Contents
               <https://www.unicode.org/reports/tr39/tr39-22.html>.
 
    [W3C.REC-html52-20171214]
-              Faulkner, S., Eicholz, A., Leithead, T., Danilo, A., and
-              S. Moon, "HTML 5.2", World Wide Web Consortium
-              Recommendation REC-html52-20171214, 14 December 2017,
-              <https://www.w3.org/TR/2017/REC-html52-20171214>.
+              Danilo, A., Ed., Eicholz, A., Ed., Moon, S., Ed.,
+              Faulkner, S., Ed., and T. Leithead, Ed., "HTML 5.2", W3C
+              REC REC-html52-20171214, W3C REC-html52-20171214, 14
+              December 2017,
+              <https://www.w3.org/TR/2017/REC-html52-20171214/>.
 
    [W3C.REC-rdf-schema-20140225]
-              Brickley, D. and R. Guha, "RDF Schema 1.1", World Wide Web
-              Consortium Recommendation REC-rdf-schema-20140225, 25
-              February 2014,
-              <https://www.w3.org/TR/2014/REC-rdf-schema-20140225>.
+              Brickley, D., Ed. and R. Guha, Ed., "RDF Schema 1.1", W3C
+              REC REC-rdf-schema-20140225, W3C REC-rdf-schema-20140225,
+              25 February 2014,
+              <https://www.w3.org/TR/2014/REC-rdf-schema-20140225/>.
 
    [W3C.REC-rdf11-concepts-20140225]
-              Cyganiak, R., Wood, D., and M. Lanthaler, "RDF 1.1
-              Concepts and Abstract Syntax", World Wide Web Consortium
-              Recommendation REC-rdf11-concepts-20140225, 25 February
-              2014,
-              <https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225>.
+              Wood, D., Ed., Lanthaler, M., Ed., and R. Cyganiak, Ed.,
+              "RDF 1.1 Concepts and Abstract Syntax", W3C REC REC-rdf11-
+              concepts-20140225, W3C REC-rdf11-concepts-20140225, 25
+              February 2014,
+              <https://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/>.
 
    [W3C.REC-turtle-20140225]
-              Prud&#039;hommeaux, E. and G. Carothers, "RDF 1.1 Turtle",
-              World Wide Web Consortium Recommendation REC-turtle-
+              Prud'hommeaux, E., Ed. and G. Carothers, Ed., "RDF 1.1
+              Turtle", W3C REC REC-turtle-20140225, W3C REC-turtle-
               20140225, 25 February 2014,
-              <https://www.w3.org/TR/2014/REC-turtle-20140225>.
+              <https://www.w3.org/TR/2014/REC-turtle-20140225/>.
 
    [W3C.REC-webarch-20041215]
-              Jacobs, I. and N. Walsh, "Architecture of the World Wide
-              Web, Volume One", World Wide Web Consortium
-              Recommendation REC-webarch-20041215, 15 December 2004,
-              <https://www.w3.org/TR/2004/REC-webarch-20041215>.
+              Jacobs, I., Ed. and N. Walsh, Ed., "Architecture of the
+              World Wide Web, Volume One", W3C REC REC-webarch-20041215,
+              W3C REC-webarch-20041215, 15 December 2004,
+              <https://www.w3.org/TR/2004/REC-webarch-20041215/>.
 
 Appendix A.  Core Vocabulary
 
@@ -2080,6 +2080,12 @@ C.2.  CoRE Link Format
 Appendix D.  Change Log
 
    This section is to be removed before publishing as an RFC.
+
+   Changes from -05 to -06:
+
+   *  Unmodified resubmission.  (Recent work is going on in
+      [I-D.ietf-core-href] and [I-D.ietf-cbor-packed], providing
+      building blocks for CoRAL).
 
    Changes from -04 to -05:
 
