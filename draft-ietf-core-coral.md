@@ -1892,6 +1892,12 @@ unregistered values would stay `[2, 6(/ attr:rt /), value]` or maybe `254([value
 # Change Log
 {:removeinrfc}
 
+Changes from -05 to -06:
+
+* Unmodified resubmission.
+  (Recent work is going on in {{I-D.ietf-core-href}} and {{I-D.ietf-cbor-packed}},
+  providing building blocks for CoRAL).
+
 Changes from -04 to -05:
 
 * Literals can no longer have properties.
